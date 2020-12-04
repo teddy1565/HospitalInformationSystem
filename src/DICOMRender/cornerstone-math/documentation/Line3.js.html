@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Line3.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Line3.html">Line3</a></li><li><a href="Plane.html">Plane</a></li></ul><h3>Global</h3><ul><li><a href="global.html#approximatelyEquals">approximatelyEquals</a></li><li><a href="global.html#findClosestPoint">findClosestPoint</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Line3.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Vector3 from './vector3.js';
+import { clamp, approximatelyEquals } from './math.js';
+
+// Copied from THREE.JS
+/**
+ * @author bhouston / http://exocortex.com
+ */
+
+
+class Line3 {
+  constructor (start, end) {
+
+    this.start = (start !== undefined) ? start : new Vector3();
+    this.end = (end !== undefined) ? end : new Vector3();
+
+  }
+
+  set (start, end) {
+
+    this.start.copy(start);
+    this.end.copy(end);
+
+    return this;
+
+  }
+
+  copy (line) {
+
+    this.start.copy(line.start);
+    this.end.copy(line.end);
+
+    return this;
+
+  }
+
+  center (optionalTarget) {
+
+    const result = optionalTarget || new Vector3();
+
+
+    return result.addVectors(this.start, this.end).multiplyScalar(0.5);
+
+  }
+
+  delta (optionalTarget) {
+
+    const result = optionalTarget || new Vector3();
+
+
+    return result.subVectors(this.end, this.start);
+
+  }
+
+  distanceSq () {
+
+    return this.start.distanceToSquared(this.end);
+
+  }
+
+  distance () {
+
+    return this.start.distanceTo(this.end);
+
+  }
+
+  at (t, optionalTarget) {
+
+    const result = optionalTarget || new Vector3();
+
+    return this.delta(result).multiplyScalar(t).add(this.start);
+
+  }
+
+  closestPointToPointParameter (point, clampToLine) {
+
+    const startP = new Vector3();
+    const startEnd = new Vector3();
+
+    startP.subVectors(point, this.start);
+    startEnd.subVectors(this.end, this.start);
+
+    const startEnd2 = startEnd.dot(startEnd);
+    const startEnd_startP = startEnd.dot(startP);
+
+    let t = startEnd_startP / startEnd2;
+
+    if (clampToLine) {
+      t = clamp(t, 0, 1);
+    }
+
+    return t;
+
+  }
+
+  closestPointToPoint (point, clampToLine, optionalTarget) {
+
+    const t = this.closestPointToPointParameter(point, clampToLine);
+
+    const result = optionalTarget || new Vector3();
+
+    return this.delta(result).multiplyScalar(t).add(this.start);
+
+  }
+
+  applyMatrix4 (matrix) {
+
+    this.start.applyMatrix4(matrix);
+    this.end.applyMatrix4(matrix);
+
+    return this;
+
+  }
+
+  equals (line) {
+
+    return line.start.equals(this.start) &amp;&amp; line.end.equals(this.end);
+
+  }
+
+  clone () {
+
+    return new Line3().copy(this);
+
+  }
+
+  intersectLine (line) {
+    // http://stackoverflow.com/questions/2316490/the-algorithm-to-find-the-point-of-intersection-of-two-3d-line-segment/10288710#10288710
+    // Consider two lines r1 and r2, represented by the following parametric equations:A + vt and B + us, respectively.
+    // Where A is a point of r1 and v a vector parallel to line.
+    // And B is a point of r2 and u a vector parallel to line.
+    // 'this' represents r2 and 'line' represents r1
+    const da = this.end.clone().sub(this.start); //u
+    const db = line.end.clone().sub(line.start); //v
+    const dc = line.start.clone().sub(this.start); // AB
+
+    const daCrossDb = da.clone().cross(db);
+    const dcCrossDb = dc.clone().cross(db);
+
+    // Lines are not coplanar, stop here
+    // Coplanar only if the vectors AB, u, v are linearly dependent, i.e AB . (u × v) = 0
+    const coplanarResult = dc.dot(daCrossDb);
+    if (!approximatelyEquals(coplanarResult, 0)) {
+      return;
+    }
+
+    const s = dcCrossDb.dot(daCrossDb) / daCrossDb.lengthSq();
+
+    // Make sure we have an intersection
+    if (s > 1.0 || isNaN(s)) {
+      return;
+    }
+
+    const intersection = this.start.clone().add(da.clone().multiplyScalar(s));
+    const distanceTest = intersection.clone().sub(line.start).lengthSq() + intersection.clone().sub(line.end).lengthSq();
+
+    if (distanceTest &lt;= line.distanceSq()) {
+      return intersection;
+    }
+
+    return;
+  }
+}
+
+export default Line3;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
