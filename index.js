@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow } = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem} = require('electron');
 
 /**
  * File system
@@ -19,23 +19,21 @@ const fs = require('fs');
  */
 const path = require('path'); 
 /**
- * USE JSDOM Simulation HTML DOM
- */
-//const jsdom = require('jsdom');
-
-/**
  * Image Convert Method
  */
 const ConvertTools = require('./src/Method/imgConvert');
 /**
  * TEST
  */
-ConvertTools.PDFtoImage("/Users/zhenkaixiong/temp/a.pdf",`${__dirname}/ars.jpg`);
-
+ConvertTools.PDFtoImage("/Users/zhenkaixiong/temp/cra.pdf",`${__dirname}/ars.png`);
 /**
- * Declare module zone end
+ * Menu setup
  */
-
+let MainWindowMenuSetup = require('./src/UserConfig/MainWindowMenuSetup');
+let MainWindowMenu = JSON.parse(fs.readFileSync(`${__dirname}/src/UserConfig/MainWindowMenu.json`));
+MainWindowMenu = MainWindowMenuSetup.setup(MainWindowMenu);
+MainWindowMenu = Menu.buildFromTemplate(MainWindowMenu);
+Menu.setApplicationMenu(MainWindowMenu);
 /**
  * main program
  */
@@ -45,9 +43,12 @@ function MainWindow(){
     WindowConfig.height = parseInt(WindowConfig.height);
     let mainWindow = new BrowserWindow({
         width:WindowConfig.width,
-        height:WindowConfig.height
+        height:WindowConfig.height,
+        webPreferences:{
+            nodeIntegration:true
+        }
     });
-    mainWindow.loadFile(path.join(`${__dirname}/src/Browser/index.html`));
+    mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
 app.whenReady().then(MainWindow);
 

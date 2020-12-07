@@ -1,0 +1,47 @@
+[
+    {
+        "label":"Application",
+        "submenu":[
+            {
+                "label":"CopyRight"
+            }
+        ]
+    },
+    {
+        "label":"Study",
+        "submenu":[
+            {
+                "label":"Start Examination"
+            },
+            {
+                "label":"Conversion Tools",
+                "submenu":[
+                    {
+                        "label":"PDF->Image",
+                        "click":""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "label":"NetWork",
+        "submenu":[
+            {
+                "label":"Upload"
+            },
+            {
+                "label":"WorkList"
+            }
+        ]
+    },
+    {
+        "role":"help",
+        "label":"Setting",
+        "submenu":[
+            {
+                "label":"App Config"
+            }
+        ]
+    }
+]
