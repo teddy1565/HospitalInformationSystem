@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem,desktopCapturer} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem} = require('electron');
 
 /**
  * File system
@@ -30,16 +30,15 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  * ===========================Code Test Zone==============================
  */
 
-console.log(desktopCapturer.getSources());
-
-
-
 
 
 
 /**
- * =========================================================
+ * ===========================To Do List=============================
+ * research:
+ *          1. contextIsolation & nodeIntegration
  */
+
 /**
  * Menu setup
  */
@@ -144,9 +143,10 @@ function Examination(){
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            contextIsolation:true
+            nodeIntegration:true
         }
     });
+    ExaminationWindow.webContents.openDevTools();
     ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
 }
 /**
