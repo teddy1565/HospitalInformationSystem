@@ -19,14 +19,17 @@ const fs = require('fs');
  */
 const path = require('path'); 
 /**
+ * Dicom Modules
+ */
+const dicomParse = require('dicom-parser');
+/**
+ * ConfigPath
+ */
+const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
+/**
  * =========================================================
  */
 
-/**
- * TEST
- */
-const ConvertTools = require('./src/Method/imgConvert');
-ConvertTools.PDFtoImage("/Users/zhenkaixiong/temp/cra.pdf",`${__dirname}/ars.png`);
 
 /**
  * =========================================================
@@ -40,6 +43,11 @@ const MainWindowMenuSetupTemplate = [
         "submenu":[
             {
                 "label":"CopyRight"
+            },
+            {
+                "label":"Quit",click(){
+                    app.quit();
+                }
             }
         ]
     },
@@ -88,8 +96,14 @@ Menu.setApplicationMenu(Menu.buildFromTemplate(MainWindowMenuSetupTemplate));
 /**
  * main program
  */
+function MainProgramSetup(){
+    fs.readFile(`${__dirname}/${ConfigPath.UserConfig.dbConnectionConfig}`,(dbconfig)=>{
+        WLLinkTest(dbconfig);
+    })
+    MainWindow();
+}
 function MainWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/UserConfig/Window.json`)));
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.MainWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
     WindowConfig.height = parseInt(WindowConfig.height);
     let mainWindow = new BrowserWindow({
@@ -101,12 +115,15 @@ function MainWindow(){
     });
     mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
-app.whenReady().then(MainWindow);
+app.whenReady().then(MainProgramSetup);
+/**
+ * =========================================================
+ */
 /**
  * SubProgram
  */
 function WorkListSettingWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/UserConfig/SettingWindowConfig.json`)));
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
     WindowConfig.height = parseInt(WindowConfig.heigth);
     let WorkListSettingWindow = new BrowserWindow({
@@ -118,11 +135,21 @@ function WorkListSettingWindow(){
     });
     WorkListSettingWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
+/**
+ * =========================================================
+ */
+/**
+ * NetWork Connection
+ */
 
 /**
- * IPC-communication
+ * WorkList connection and config load test
+ * If linked , it will change Menu to show link status
+ * @param {JSON} dbConfig 
+ * @returns {void}
  */
-(()=>{
+function WLLinkTest(dbConfig){
+    if(!dbConfig)return 0;
     let a = MainWindowMenuSetupTemplate;
     for(let i in a){
         if(a[i].label=='NetWork'){
@@ -141,7 +168,16 @@ function WorkListSettingWindow(){
         }
     }
     Menu.setApplicationMenu(Menu.buildFromTemplate(a));
-})();
+}
+/**
+ * =========================================================
+ */
+/**
+ * IPC-communication
+ */
+/**
+ * =========================================================
+ */
 /**
  * Application End
  */

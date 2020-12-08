@@ -24,10 +24,14 @@
     "gulp": "^4.0.2",
     "hammerjs": "^2.0.8",
     "jsdom": "^16.4.0",
+    "mongodb": "^3.6.3",
+    "mssql": "^6.2.3",
+    "node-postgres": "^0.6.2",
     "pdf-parse": "^1.1.1",
     "pdf2png": "^1.0.5",
     "pdfjs-dist": "^2.5.207",
     "pdfmake": "^0.1.68",
+    "pg": "^8.5.1",
     "webpack": "^5.9.0",
     "worker-loader": "^3.0.6"
   }
