@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pushRep":"git push origin HEAD:window-dev"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "cornerstone-wado-image-loader": "^3.2.0",
     "cornerstone-web-image-loader": "^2.1.1",
     "dicom-parser": "^1.8.7",
+    "electron-builder": "^22.9.1",
     "gulp": "^4.0.2",
     "hammerjs": "^2.0.8",
     "jsdom": "^16.4.0",

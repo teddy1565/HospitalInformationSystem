@@ -55,7 +55,9 @@ const MainWindowMenuSetupTemplate = [
         "label":"Study",
         "submenu":[
             {
-                "label":"Start Examination"
+                "label":"Start Examination",click(){
+                    Examination();
+                }
             },
             {
                 "label":"Conversion Tools",
@@ -115,7 +117,7 @@ function MainWindow(){
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            nodeIntegration:true
+            contextIsolation:true
         }
     });
     mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
@@ -127,6 +129,23 @@ app.whenReady().then(MainProgramSetup);
 /**
  * SubProgram
  */
+/**
+ * Create a new BrowserWindow where study on examination
+ */
+function Examination(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let ExaminationWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true
+        }
+    });
+    ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
+}
+/**
+ * Create a new BrowserWindow for setup WorkList Options
+ */
 function WorkListSettingWindow(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
@@ -135,7 +154,7 @@ function WorkListSettingWindow(){
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            nodeIntegration:true
+            contextIsolation:true
         }
     });
     WorkListSettingWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
@@ -146,7 +165,7 @@ function JPEGtoDICOM_Transfer_Window(){
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            nodeIntegration:true
+            contextIsolation:true
         }
     });
     JTDTransferWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));

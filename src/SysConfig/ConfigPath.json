@@ -5,5 +5,9 @@
         "MainWindowConfig":"./src/UserConfig/MainWindowConfig.json",
         "WLsettingWindowConfig":"./src/UserConfig/WLsettingWindowConfig.json",
         "JTDtranslatorConfig":"./src/UserConfig/JTDtranslatorConfig.json"
+    },
+    "SysConfig":
+    {
+        "PublicWindowConfig":"./src/SysConfig/PublicWindowConfig.json"
     }
 }
