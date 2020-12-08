@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem,desktopCapturer} = require('electron');
 
 /**
  * File system
@@ -27,8 +27,14 @@ const dicomParse = require('dicom-parser');
  */
 const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
 /**
- * =========================================================
+ * ===========================Code Test Zone==============================
  */
+
+console.log(desktopCapturer.getSources());
+
+
+
+
 
 
 /**
