@@ -62,6 +62,11 @@ const MainWindowMenuSetupTemplate = [
                 "submenu":[
                     {
                         "label":"PDF->Image",click(){console.log(1)}
+                    },
+                    {
+                        "label":"JPEG->DICOM",click(){
+                            JPEGtoDICOM_Transfer_Window();
+                        }
                     }
                 ]
             }
@@ -134,6 +139,17 @@ function WorkListSettingWindow(){
         }
     });
     WorkListSettingWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+}
+function JPEGtoDICOM_Transfer_Window(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.JTDtranslatorConfig}`))); 
+    let JTDTransferWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            nodeIntegration:true
+        }
+    });
+    JTDTransferWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
 /**
  * =========================================================

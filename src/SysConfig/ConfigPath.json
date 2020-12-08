@@ -3,6 +3,7 @@
     {
         "dbConnectionConfig":"./src/UserConfig/dbConfig.json",
         "MainWindowConfig":"./src/UserConfig/MainWindowConfig.json",
-        "WLsettingWindowConfig":"./src/UserConfig/WLsettingWindowConfig.json"
+        "WLsettingWindowConfig":"./src/UserConfig/WLsettingWindowConfig.json",
+        "JTDtranslatorConfig":"./src/UserConfig/JTDtranslatorConfig.json"
     }
 }
