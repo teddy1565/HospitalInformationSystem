@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pushRep":"git push origin HEAD:window-dev"
+    "push":"git add * && git commit -m \"Commit By npm\" && git push origin HEAD:window-dev"
   },
   "author": "",
   "license": "ISC",
