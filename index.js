@@ -38,6 +38,7 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  * research:
  *          1. contextIsolation & nodeIntegration
  *          2. /src/Method/PDFConvert.js -- promise & sync  problem
+ *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  */
 
 /**
