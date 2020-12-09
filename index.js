@@ -39,6 +39,8 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  *          1. contextIsolation & nodeIntegration
  *          2. /src/Method/PDFConvert.js -- promise & sync  problem
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
+ *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
+ *          4.
  */
 
 /**
