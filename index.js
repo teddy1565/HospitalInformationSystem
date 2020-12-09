@@ -230,10 +230,7 @@ function WLLinkTest(dbConfig){
 /**
  * IPC-communication
  */
-ipcMain.on("test",(Event,args)=>{
-    let c = require('./src/Method/PDFConvert');
-    c.PDFtoPNG_Converter();
-});
+
 /**
  * =========================================================
  */

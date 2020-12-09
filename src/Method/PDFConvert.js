@@ -134,10 +134,8 @@ async function PDFtoPNG_prototype(PDFpath,OutPutPath,once,WriteToOutputPath,func
     }
     return result;
 }
-function PDFtoPNG_Converter(){
-    while(1){
-        let a;
-    }
+function PDFtoPNG_Converter_Simple(PDFPath,OutputPath){
+    PDFtoPNG_prototype(PDFPath,OutputPath,false,true,null);
 }
 /**
  * ==================Test Zone======================
@@ -147,6 +145,6 @@ function PDFtoPNG_Converter(){
  * ================== Module Export Zone ====================
  */
 const res = {
-    PDFtoPNG_Converter:PDFtoPNG_Converter
+    PDFtoPNG_Converter_Simple:PDFtoPNG_Converter_Simple
 }
 module.exports=res;
