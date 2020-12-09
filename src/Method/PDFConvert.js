@@ -62,7 +62,7 @@ NodeCanvasFactory.prototype = {
 const CMAP_URL = `${__dirname}/../../${pdfjsLibOptionsPath.cmaps}`
 const CMAP_PACKED = true;
 /**
- * Convert PDF to PNG
+ * Convert PDF to PNG prototype
  * Notes:
  *      Use this function need knows Promise/async/await
  *      This is an async function, that mean the function will response real result 
@@ -79,9 +79,14 @@ const CMAP_PACKED = true;
  * >true: Real-time write to OutputPath and result Buffer
  * 
  * >false: Only result Buffer
+ * @param {String|null} funcTransfer
+ * >null: nothing to do
+ * 
+ * >String: String receive Path and result will write Buffer stream to this path
+ * path need a json file .
  * @returns {Array|Buffer} ImageList or one image
  */
-async function PDFtoPNG(PDFpath,OutPutPath,once,WriteToOutputPath){
+async function PDFtoPNG_prototype(PDFpath,OutPutPath,once,WriteToOutputPath,funcTransfer){
     let result=[];
     let data = new Uint8Array(fs.readFileSync(PDFpath));
     let loadingTask = pdfjsLib.getDocument({
@@ -124,15 +129,24 @@ async function PDFtoPNG(PDFpath,OutPutPath,once,WriteToOutputPath){
         console.log(`${reason}`);
         result = null;
     });
+    if(funcTransfer!==null&&typeof(funcTransfer)=="string"){
+        fs.writeFileSync(funcTransfer,JSON.stringify(result));
+    }
     return result;
+}
+function PDFtoPNG_Converter(){
+    while(1){
+        let a;
+    }
 }
 /**
  * ==================Test Zone======================
  */
+
 /**
  * ================== Module Export Zone ====================
  */
 const res = {
-    PDFtoPNG:PDFtoPNG
+    PDFtoPNG_Converter:PDFtoPNG_Converter
 }
 module.exports=res;

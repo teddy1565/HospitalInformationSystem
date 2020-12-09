@@ -1,0 +1,4 @@
+{
+    "cmaps":"./node_modules/pdfjs-dist/cmaps",
+    "pdfjs":"./node_modules/pdfjs-dist/es5/build/pdf.js"
+}

@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem, ipcMain} = require('electron');
 
 /**
  * File system
@@ -37,6 +37,7 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  * ===========================To Do List=============================
  * research:
  *          1. contextIsolation & nodeIntegration
+ *          2. /src/Method/PDFConvert.js -- promise & sync  problem
  */
 
 /**
@@ -68,7 +69,9 @@ const MainWindowMenuSetupTemplate = [
                 "label":"Conversion Tools",
                 "submenu":[
                     {
-                        "label":"PDF->Image",click(){console.log(1)}
+                        "label":"PDFConverterKit",click(){
+                            PDFConverterKit_Window();
+                        }
                     },
                     {
                         "label":"JPEG->DICOM",click(){
@@ -176,6 +179,17 @@ function JPEGtoDICOM_Transfer_Window(){
     });
     JTDTransferWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
+function PDFConverterKit_Window(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let PDFConverterKitWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            nodeIntegration:true
+        }
+    });
+    PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
+}
 /**
  * =========================================================
  */
@@ -216,6 +230,10 @@ function WLLinkTest(dbConfig){
 /**
  * IPC-communication
  */
+ipcMain.on("test",(Event,args)=>{
+    let c = require('./src/Method/PDFConvert');
+    c.PDFtoPNG_Converter();
+});
 /**
  * =========================================================
  */
