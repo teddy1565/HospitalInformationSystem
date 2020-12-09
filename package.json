@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "push":"git add * && git commit -m \"Commit By npm\" && git push origin HEAD:window-dev"
+    "MacPush": "git add * && git commit -m \"Commit By npm\" && git push origin HEAD:dev-v1",
+    "WinPush": "git add * && git commit -m \"Commit By npm\" && git push origin HEAD:window-dev"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
+    "assert": "^2.0.0",
     "body-parser": "^1.19.0",
     "canvas": "^2.6.1",
     "cornerstone-core": "^2.3.0",

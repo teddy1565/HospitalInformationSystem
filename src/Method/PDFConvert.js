@@ -1,4 +1,3 @@
-
 /**
  * mozilla pdfjs has some problem when running on nodejs or electron
  * Error 1:[document is not defined]:
@@ -28,22 +27,32 @@
 //global.document.createElement = ()=>{};
 //const pdfjsLib = require("pdfjs-dist");
 //pdfjsLib.GlobalWorkerOptions.workerSrc=`${__dirname}/../../node_modules/pdfjs-dist/build/pdf.worker.js`;
-
+/**
+ * 2020/12/09
+ * If nodeJS use pdfjs need with es5/build
+ */
 /**
  * Declare module
  */
+const pdfjsLib = require("pdfjs-dist/es5/build/pdf")
 const path = require('path');
 const fs = require('fs');
-const nodePDF = require('../self-made-modules/nodePDF');
 
 /**
- * Convert PDF to image
+ * Module Method
+ */
+
+/**
+ * Convert PDF to PNG
  * @param {String} PDFpath --PDF File path
  * @param {String} OutPutPath --OutPutPath
  * @returns {void}
  */
 function PDFtoImage(PDFpath,OutPutPath,channel){
-    let data = nodePDF.PDFparse(fs.readFileSync(PDFpath),false);
+    let c = pdfjsLib.getDocument(PDFpath);
+    c.promise.then((pdf)=>{
+        console.log(pdf);
+    });
 }
 const res = {
     PDFtoImage:PDFtoImage
