@@ -1,1 +1,4 @@
 node_modules
+webpack.config.js
+pdfmake
+pdf.js
