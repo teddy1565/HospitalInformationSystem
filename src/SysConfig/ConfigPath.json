@@ -2,7 +2,7 @@
     "UserConfig":
     {
         "dbConnectionConfig":"./src/UserConfig/dbConfig.json",
-        "MainWindowConfig":"./src/UserConfig/MainWindowConfig.json",
+        "UserWindowPersonalizeConfig":"./src/UserConfig/UserWindowPersonalizeConfig.json",
         "WLsettingWindowConfig":"./src/UserConfig/WLsettingWindowConfig.json",
         "JTDtranslatorConfig":"./src/UserConfig/JTDtranslatorConfig.json"
     },
@@ -10,6 +10,7 @@
     {
         "PublicWindowConfig":"./src/SysConfig/PublicWindowConfig.json",
         "LoginUsers":"./src/SysConfig/LoginUsers.json",
-        "LoginWindowConfig":"./src/SysConfig/LoginWindowConfig.json"
+        "LoginWindowConfig":"./src/SysConfig/LoginWindowConfig.json",
+        "WindowRenderPath":"./src/SysConfig/WindowRenderPath.json"
     }
 }

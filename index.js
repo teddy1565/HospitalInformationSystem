@@ -40,7 +40,7 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  *          2. /src/Method/PDFConvert.js -- promise & sync  problem
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
- *          4.
+ *          4. BootStrap 切版
  */
 
 /**
@@ -121,9 +121,10 @@ function MainProgramSetup(){
     MainWindow();
 }
 function MainWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.MainWindowConfig}`)));
-    WindowConfig.width = parseInt(WindowConfig.width);
-    WindowConfig.height = parseInt(WindowConfig.height);
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+    let RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)))
+    WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
+    WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
     let LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let mainWindow = new BrowserWindow({
         width:WindowConfig.width,
@@ -133,9 +134,9 @@ function MainWindow(){
         }
     });
     if(LoginUsers.length>0){
-        mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+        mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
     }else{
-        mainWindow.loadFile(path.join(`${__dirname}/src/Browser/Login.html`));
+        mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
         mainWindow.webContents.on('did-finish-load',()=>{
             mainWindow.webContents.send("loadBG","1");
         });
