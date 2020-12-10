@@ -8,6 +8,8 @@
     },
     "SysConfig":
     {
-        "PublicWindowConfig":"./src/SysConfig/PublicWindowConfig.json"
+        "PublicWindowConfig":"./src/SysConfig/PublicWindowConfig.json",
+        "LoginUsers":"./src/SysConfig/LoginUsers.json",
+        "LoginWindowConfig":"./src/SysConfig/LoginWindowConfig.json"
     }
 }

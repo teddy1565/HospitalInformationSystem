@@ -121,14 +121,22 @@ function MainWindow(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.MainWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
     WindowConfig.height = parseInt(WindowConfig.height);
+    let LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let mainWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            contextIsolation:true
+            nodeIntegration:true
         }
     });
-    mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+    if(LoginUsers.length>0){
+        mainWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+    }else{
+        mainWindow.loadFile(path.join(`${__dirname}/src/Browser/Login.html`));
+        mainWindow.webContents.on('did-finish-load',()=>{
+            mainWindow.webContents.send("loadBG","1");
+        });
+    }
 }
 app.whenReady().then(MainProgramSetup);
 /**
@@ -230,6 +238,16 @@ function WLLinkTest(dbConfig){
 /**
  * IPC-communication
  */
+ipcMain.on("GetBGconfig",(Event,args)=>{
+    fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginWindowConfig}`),(err,data)=>{
+        if(err)console.log(err);
+        else{
+            let result = JSON.parse(data);
+            result = JSON.stringify(result.background);
+            Event.reply("BGconfigResult",result);
+        }
+    });
+});
 
 /**
  * =========================================================
