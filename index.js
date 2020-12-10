@@ -41,6 +41,7 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
  *          4. BootStrap 切版
+ *          5. UserConfig , SysConfig Path整理
  */
 
 /**
