@@ -1,0 +1,13 @@
+{
+    "background":{
+        "imagePath":"../../LOGIN.jpg",
+        "backgroundPosition":"center 0",
+        "backgroundRepeat":"no-repeat",
+        "backgroundAttachment":"fixed",
+        "backgroundSize":"cover",
+        "WebkitBackgroundSize":"cover",
+        "oBackgroundSize":"cover",
+        "mozBackgroundSize":"cover",
+        "msBackgroundSize":"cover"
+    }
+}
