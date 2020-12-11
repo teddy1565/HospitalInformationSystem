@@ -1,0 +1,8 @@
+{
+    "capture_test":"./src/BrowserPreloadScript/capture_test.js",
+    "index_demo":"./src/BrowserPreloadScript/index_demo.js",
+    "JpgToDicom":"./src/BrowserPreloadScript/JTD.js",
+    "login":"./src/BrowserPreloadScript/preload.js",
+    "PDFConverterKit":"./src/BrowserPreloadScript/PDFConverterKit.js",
+    "WorkListSetting":"./src/BrowserPreloadScript/WorkListSetting.js"
+}

@@ -14,7 +14,7 @@
             <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Seach">
             <ul class="navbar-nav px-3">
                 <li class="nav-item text-nowrap">
-                    <a class="nav-link" href="#">sign out</a>
+                    <a class="nav-link" href="#" onclick="singOut()">sign out</a>
                 </li>
             </ul>
         </nav>
@@ -23,3 +23,8 @@
         </div>
     </body>
 </html>
+<script>
+    function singOut(){
+        ipcRenderer.send("userSingOutFromMainWindow","SignOut");
+    }
+</script>

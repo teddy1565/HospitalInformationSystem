@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem, ipcMain} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote} = require('electron');
 
 /**
  * File system
@@ -26,7 +26,8 @@ const dicomParse = require('dicom-parser');
  * ConfigPath
  */
 const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
-const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)))
+const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)));
+const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/BrowserPreloadScript/RenderScriptPath.json")));
 /**
  * ===========================Code Test Zone==============================
  */
@@ -42,6 +43,7 @@ const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPa
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
  *          4. BootStrap 切版
+ *          5. NodeIntegration 修改 使用preload載入ipcRenderer 以對應下一版本更新及安全性問題
  */
 
 /**
@@ -127,16 +129,27 @@ function MainWindow(){
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
     WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
     let LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
-    let mainWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            nodeIntegration:true
-        }
-    });
     if(LoginUsers.length>0){
+        let mainWindow = new BrowserWindow({
+            width:WindowConfig.width,
+            height:WindowConfig.height,
+            webPreferences:{
+                contextIsolation:true,
+                preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
+            }
+        });
         mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
     }else{
+        let mainWindow = new BrowserWindow({
+            width:WindowConfig.width,
+            height:WindowConfig.height,
+            webPreferences:{
+                contextIsolation:true,
+                nodeIntegration:true,
+                preload:path.join(__dirname, `${RenderScriptPath.login}`)
+            }
+        });
+        mainWindow.webContents.openDevTools();
         mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
         mainWindow.webContents.on('did-finish-load',()=>{
             mainWindow.webContents.send("loadBG","1");
@@ -246,6 +259,18 @@ function WLLinkTest(dbConfig){
 /**
  * IPC-communication
  */
+/**
+ * MainWinodw user SingOut --test
+ */
+ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
+    fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify([]));
+    let w = BrowserWindow.getFocusedWindow();
+    MainWindow();
+    w.close();
+});
+/**
+ * GetLoginWindow Background config --test
+ */
 ipcMain.on("GetBGconfig",(Event,args)=>{
     fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginWindowConfig}`),(err,data)=>{
         if(err)console.log(err);
@@ -256,6 +281,9 @@ ipcMain.on("GetBGconfig",(Event,args)=>{
         }
     });
 });
+/**
+ * MainWindow LoginIn  --test
+ */
 ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     let users = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let user = JSON.parse(args);
@@ -267,7 +295,9 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     if(userLoginResult===true){
         users.push(userWriteIn);
         fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(users));
-        
+        let w = BrowserWindow.getFocusedWindow();
+        MainWindow();
+        w.close();
     }else{
         
     }
