@@ -41,7 +41,7 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
  *          4. BootStrap 切版
- *          5. UserConfig , SysConfig Path整理
+ *          5. UserConfig , SysConfig Path , renderer path整理
  */
 
 /**
@@ -169,7 +169,7 @@ function Examination(){
  * Create a new BrowserWindow for setup WorkList Options
  */
 function WorkListSettingWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WLsettingWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
     WindowConfig.height = parseInt(WindowConfig.heigth);
     let WorkListSettingWindow = new BrowserWindow({
@@ -182,7 +182,7 @@ function WorkListSettingWindow(){
     WorkListSettingWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
 }
 function JPEGtoDICOM_Transfer_Window(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.JTDtranslatorConfig}`))); 
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.JTDtranslatorConfig}`))); 
     let JTDTransferWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
