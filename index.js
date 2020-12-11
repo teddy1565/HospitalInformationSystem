@@ -26,6 +26,7 @@ const dicomParse = require('dicom-parser');
  * ConfigPath
  */
 const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
+const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)))
 /**
  * ===========================Code Test Zone==============================
  */
@@ -41,7 +42,6 @@ const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysCon
  *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
  *          4. BootStrap 切版
- *          5. UserConfig , SysConfig Path , renderer path整理
  */
 
 /**
@@ -116,14 +116,14 @@ Menu.setApplicationMenu(Menu.buildFromTemplate(MainWindowMenuSetupTemplate));
  * main program
  */
 function MainProgramSetup(){
-    fs.readFile(`${__dirname}/${ConfigPath.UserConfig.dbConnectionConfig}`,(dbconfig)=>{
+    fs.readFile(`${__dirname}/${ConfigPath.SysConfig.dbConnectionConfig}`,(dbconfig)=>{
         WLLinkTest(dbconfig);
     })
     MainWindow();
 }
 function MainWindow(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
-    let RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)))
+    
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
     WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
     let LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
@@ -169,7 +169,7 @@ function Examination(){
  * Create a new BrowserWindow for setup WorkList Options
  */
 function WorkListSettingWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WLsettingWindowConfig}`)));
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.width);
     WindowConfig.height = parseInt(WindowConfig.heigth);
     let WorkListSettingWindow = new BrowserWindow({
@@ -179,10 +179,10 @@ function WorkListSettingWindow(){
             contextIsolation:true
         }
     });
-    WorkListSettingWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+    WorkListSettingWindow.loadFile(path.join(`${__dirname}${RenderPath.WorkListSettingWindow}`));
 }
 function JPEGtoDICOM_Transfer_Window(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.JTDtranslatorConfig}`))); 
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.JTDtranslatorConfig}`))); 
     let JTDTransferWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
@@ -190,7 +190,7 @@ function JPEGtoDICOM_Transfer_Window(){
             contextIsolation:true
         }
     });
-    JTDTransferWindow.loadFile(path.join(`${__dirname}${WindowConfig.RendererPath}`));
+    JTDTransferWindow.loadFile(path.join(`${__dirname}${RenderPath.ImageConvertor.JpgToDICOM}`));
 }
 function PDFConverterKit_Window(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
@@ -202,6 +202,9 @@ function PDFConverterKit_Window(){
         }
     });
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
+}
+function userLogin(){
+    return true;
 }
 /**
  * =========================================================
@@ -253,7 +256,22 @@ ipcMain.on("GetBGconfig",(Event,args)=>{
         }
     });
 });
-
+ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
+    let users = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
+    let user = JSON.parse(args);
+    let userLoginResult = userLogin(user);
+    let userWriteIn={
+        ID:user[0],
+        PWD:user[1]
+    }
+    if(userLoginResult===true){
+        users.push(userWriteIn);
+        fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(users));
+        
+    }else{
+        
+    }
+});
 /**
  * =========================================================
  */

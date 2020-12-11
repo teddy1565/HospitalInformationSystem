@@ -1,4 +1,8 @@
 {
     "main":"/src/Browser/index_demo.html",
-    "login":"/src/Browser/Login.html"
+    "login":"/src/Browser/Login.html",
+    "ImageConvertor":{
+        "JpgToDICOM":"/src/Browser/JTD.html"
+    },
+    "WorkListSettingWinodw":"/src/Browser/WorkListSetting.html"
 }
