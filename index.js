@@ -34,7 +34,10 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 
 
 
-
+/**
+ *  ===========================Notes=============================
+ *      1.contextIsolation:true 會導致 preload 及 NodeIntegration失效
+ */
 /**
  * ===========================To Do List=============================
  * research:
@@ -134,6 +137,8 @@ function MainWindow(){
             width:WindowConfig.width,
             height:WindowConfig.height,
             webPreferences:{
+                nodeIntegration:false,
+                remote:false,
                 contextIsolation:true,
                 preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
             }
@@ -144,8 +149,9 @@ function MainWindow(){
             width:WindowConfig.width,
             height:WindowConfig.height,
             webPreferences:{
+                nodeIntegration:false,
+                remote:false,
                 contextIsolation:true,
-                nodeIntegration:true,
                 preload:path.join(__dirname, `${RenderScriptPath.login}`)
             }
         });
