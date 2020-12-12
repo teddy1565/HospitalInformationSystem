@@ -137,8 +137,6 @@ function MainWindow(){
             width:WindowConfig.width,
             height:WindowConfig.height,
             webPreferences:{
-                nodeIntegration:false,
-                remote:false,
                 contextIsolation:true,
                 preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
             }
@@ -149,8 +147,6 @@ function MainWindow(){
             width:WindowConfig.width,
             height:WindowConfig.height,
             webPreferences:{
-                nodeIntegration:false,
-                remote:false,
                 contextIsolation:true,
                 preload:path.join(__dirname, `${RenderScriptPath.login}`)
             }
