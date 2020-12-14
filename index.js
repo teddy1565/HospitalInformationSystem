@@ -37,6 +37,9 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 /**
  *  ===========================Notes=============================
  *      1.contextIsolation:true 會導致 preload 及 NodeIntegration失效
+ *      2.不使用nodeIntegration下 需同時開啟contextIsolation和worldSafeExecuteJavaScript
+ *        才能夠注入preload script
+ *      
  */
 /**
  * ===========================To Do List=============================
@@ -138,6 +141,7 @@ function MainWindow(){
             height:WindowConfig.height,
             webPreferences:{
                 contextIsolation:true,
+                worldSafeExecuteJavaScript:true,
                 preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
             }
         });
@@ -148,10 +152,10 @@ function MainWindow(){
             height:WindowConfig.height,
             webPreferences:{
                 contextIsolation:true,
+                worldSafeExecuteJavaScript:true,
                 preload:path.join(__dirname, `${RenderScriptPath.login}`)
             }
         });
-        mainWindow.webContents.openDevTools();
         mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
         mainWindow.webContents.on('did-finish-load',()=>{
             mainWindow.webContents.send("loadBG","1");
@@ -174,10 +178,12 @@ function Examination(){
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            nodeIntegration:true
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname,`${RenderScriptPath.capture_test}`)
         }
     });
-    ExaminationWindow.webContents.openDevTools();
+    //ExaminationWindow.webContents.openDevTools();
     ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
 }
 /**

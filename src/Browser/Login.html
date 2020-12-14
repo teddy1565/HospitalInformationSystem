@@ -1,4 +1,6 @@
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+<!-- importent! this CSP not safe, it just for test dev -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+<!-- split line -->
 <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
 <html>
     <head>
@@ -25,12 +27,12 @@
     function MainLogin(){
         let ID = document.getElementById("account").value;
         let PWD = document.getElementById("password").value;
-        window.ipcR.send("UserLoginFromLoginWindow",JSON.stringify([ID,PWD]));
+        window.ipcRenderer.send("UserLoginFromLoginWindow",JSON.stringify([ID,PWD]));
     }
-    window.ipcR.receive("loadBG",(data)=>{
-        window.ipcR.send("GetBGconfig","1");
+    window.ipcRenderer.receive("loadBG",(args)=>{
+        window.ipcRenderer.send("GetBGconfig","1");
     });
-    window.ipcR.receive("BGconfigResult",(data)=>{
+    window.ipcRenderer.receive("BGconfigResult",(args)=>{
         let Config = JSON.parse(args);
         let bodyCSS = document.getElementById("LoginBody");
         bodyCSS.style=`background:url(${Config.imagePath});background-position: ${Config.backgroundPosition};background-repeat: ${Config.backgroundRepeat};background-attachment:${Config.backgroundAttachment};background-size:${Config.backgroundSize};-webkit-background-size:${Config.WebkitBackgroundSize};-o-background-size:${Config.oBackgroundSize};-moz-background-size:${Config.mozBackgroundSize};-ms-background-size:${Config.msBackgroundSize}`;
