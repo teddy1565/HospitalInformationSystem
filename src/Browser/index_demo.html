@@ -34,11 +34,13 @@
     </body>
 </html>
 <script>
+    let CurrentUser;
     window.ipcRenderer.receive("CurrentUser",(args)=>{
         args = JSON.parse(args);
+        CurrentUser = args.ID;
         document.getElementById("UserDashBoard").innerHTML +=`<span class="navbar-text">${args.ID}</span>`;
     });
     function signOut(){
-        window.ipcRenderer.send("userSingOutFromMainWindow","SignOut");
+        window.ipcRenderer.send("userSingOutFromMainWindow",CurrentUser);
     }
 </script>

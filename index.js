@@ -119,7 +119,7 @@ const MainWindowMenuSetupTemplate = [
         ]
     }
 ];
-Menu.setApplicationMenu(Menu.buildFromTemplate(MainWindowMenuSetupTemplate));
+
 /**
  * main program
  */
@@ -127,48 +127,70 @@ function MainProgramSetup(){
     fs.readFile(`${__dirname}/${ConfigPath.SysConfig.dbConnectionConfig}`,(dbconfig)=>{
         WLLinkTest(dbconfig);
     })
-    MainWindow();
+}
+function indexWindow(CurrentUser){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+    WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
+    WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
+    Menu.setApplicationMenu(Menu.buildFromTemplate(MainWindowMenuSetupTemplate));
+    MainProgramSetup();
+    let mainWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
+        }
+    });
+    mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
+    mainWindow.webContents.on('did-finish-load',()=>{
+        const CurrentUserResult = {
+            ID:CurrentUser
+        };
+        mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
+    });
 }
 function MainWindow(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
-    
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
     WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
+    
     const LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
-    if(LoginUsers.length==1&&LoginUsers.length>0){
-        let mainWindow = new BrowserWindow({
-            width:WindowConfig.width,
-            height:WindowConfig.height,
-            webPreferences:{
-                contextIsolation:true,
-                worldSafeExecuteJavaScript:true,
-                preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
+    Menu.setApplicationMenu(null);
+    let mainWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        frame:false,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.login}`)
+        }
+    });
+    mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
+    mainWindow.webContents.on('did-finish-load',()=>{
+        fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),(err,data)=>{
+            let result=[];
+            data = JSON.parse(data);
+            if(data.length>0){
+                for(let i in data){
+                    result.push(data[i].ID);
+                }
             }
-        });
-        mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
-        mainWindow.webContents.on('did-finish-load',()=>{
-            const CurrentUserResult = {
-                ID:LoginUsers[0].ID
-            };
-            mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
-        });
-    }else{
-        let mainWindow = new BrowserWindow({
-            width:WindowConfig.width,
-            height:WindowConfig.height,
-            webPreferences:{
-                contextIsolation:true,
-                worldSafeExecuteJavaScript:true,
-                preload:path.join(__dirname, `${RenderScriptPath.login}`)
+            if(result.length<=0&&result.constructor=== Array){
+                mainWindow.webContents.send("localUsersList",null);
+            }else if(result.constructor=== Array){
+                mainWindow.webContents.send("localUsersList",JSON.stringify(result));
+            }else{
+                console.log("ERR");
+                app.quit();
             }
-        });
-        mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
-        mainWindow.webContents.on('did-finish-load',()=>{
-            mainWindow.webContents.send("loadBG","1");
-        });
-    }
+        })
+        mainWindow.webContents.send("loadBG","1");
+    });
 }
-app.whenReady().then(MainProgramSetup);
+app.whenReady().then(MainWindow);
 /**
  * =========================================================
  */
@@ -276,8 +298,15 @@ function WLLinkTest(dbConfig){
 /**
  * MainWinodw user SingOut --test
  */
+
 ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
-    fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify([]));
+    let LocalUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
+    let LocalUsersUpdate = [];
+    for(let i in LocalUsers){
+        if(LocalUsers[i].ID == args)continue;
+        LocalUsersUpdate.push(LocalUsers[i]);
+    }
+    fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(LocalUsersUpdate));
     let w = BrowserWindow.getFocusedWindow();
     MainWindow();
     w.close();
@@ -296,6 +325,12 @@ ipcMain.on("GetBGconfig",(Event,args)=>{
     });
 });
 /**
+ * Leave Application
+ */
+ipcMain.on("LeaveApplication",(Event,args)=>{
+    app.quit();
+});
+/**
  * MainWindow LoginIn  --test
  */
 ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
@@ -306,11 +341,11 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
         ID:user[0],
         PWD:user[1]
     }
+    let w = BrowserWindow.getFocusedWindow();
     if(userLoginResult===true){
         users.push(userWriteIn);
         fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(users));
-        let w = BrowserWindow.getFocusedWindow();
-        MainWindow();
+        indexWindow(user[0]);
         w.close();
     }else{
         
