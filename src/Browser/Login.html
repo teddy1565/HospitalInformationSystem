@@ -35,12 +35,25 @@
 </html>
 <script>
     function MainLogin(){
-        let ID = document.getElementById("account").value;
+        let ID;
+        if(document.getElementById("account").style.display=="none"){
+            ID = document.getElementById("DefineLoginLocalUser").value;
+        }else{
+            ID = document.getElementById("account").value;
+        }
         let PWD = document.getElementById("password").value;
         window.ipcRenderer.send("UserLoginFromLoginWindow",JSON.stringify([ID,PWD]));
     }
     function Leave(){
         window.ipcRenderer.send("LeaveApplication","leave");
+    }
+    function ManualControlLogin(){
+        document.getElementById("ExpressLogin").style.display="none";
+        document.getElementById("account").style.display="block";
+    }
+    function ExpressLoginSelect(acc){
+        document.getElementById("DefineLoginLocalUser").innerHTML = `${acc}`;
+        document.getElementById("DefineLoginLocalUser").value = `${acc}`;
     }
     window.ipcRenderer.receive("loadBG",(args)=>{
         window.ipcRenderer.send("GetBGconfig","1");
@@ -58,10 +71,14 @@
         }
         args = JSON.parse(args);
         document.getElementById("DefineLoginLocalUser").innerHTML+=`${args[0]}`;
+        document.getElementById("DefineLoginLocalUser").value=`${args[0]}`;
         let target = document.getElementById("LocalUsersListItems");
         for(let i in args){
-            target.innerHTML+=`<a class="dropdown-item" href="#">${args[i]}</a>`;
+            target.innerHTML+=`<a class="dropdown-item" href="#" onclick="ExpressLoginSelect('${args[i]}')">${args[i]}</a>`;
+            target.value = `${args[0]}`;
         }
+        target.innerHTML+=`<div class="dropdown-divider"></div>`;
+        target.innerHTML+=`<a class="dropdown-item" href="#" onclick="ManualControlLogin()">新使用者登入</a>`;
     });
 </script>
 
