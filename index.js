@@ -134,8 +134,8 @@ function MainWindow(){
     
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
     WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
-    let LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
-    if(LoginUsers.length>0){
+    const LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
+    if(LoginUsers.length==1&&LoginUsers.length>0){
         let mainWindow = new BrowserWindow({
             width:WindowConfig.width,
             height:WindowConfig.height,
@@ -146,6 +146,12 @@ function MainWindow(){
             }
         });
         mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
+        mainWindow.webContents.on('did-finish-load',()=>{
+            const CurrentUserResult = {
+                ID:LoginUsers[0].ID
+            };
+            mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
+        });
     }else{
         let mainWindow = new BrowserWindow({
             width:WindowConfig.width,
