@@ -22,6 +22,7 @@ const path = require('path');
  * Dicom Modules
  */
 const dicomParse = require('dicom-parser');
+const { web } = require('webpack');
 /**
  * ConfigPath
  */
@@ -123,6 +124,7 @@ const MainWindowMenuSetupTemplate = [
 /**
  * main program
  */
+
 function MainProgramSetup(){
     fs.readFile(`${__dirname}/${ConfigPath.SysConfig.dbConnectionConfig}`,(dbconfig)=>{
         WLLinkTest(dbconfig);
