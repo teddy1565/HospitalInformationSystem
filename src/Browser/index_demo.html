@@ -12,11 +12,8 @@
     <body>
         <nav class = "navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
             <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">HIMS2020</a>
-            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button> -->
-            <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Seach">
-            <button class="btn btn-success">Query</button>
+            <input class="form-control form-control-dark w-100" id="QueryString" type="text" placeholder="Search" aria-label="Seach">
+            <button class="btn btn-success" onclick="Query()">Query</button>
             <div style="margin-left: 5%;"></div>
             <div class="dropdown show">
                 <a class="btn btn-default dropdown-toggle" href="#" role="button" id="UserDashBoard" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -27,9 +24,22 @@
                 </div>
             </div>
         </nav>
-        
         <div class = "container-fluit">
-            
+            <div class="row">
+                <nav class="navbar bg-secondary col-md-3 col-lg-2 mr-0 px-3">
+                    <ul class="navbar-nav d-flex">
+                        <li class="nav-item">
+                            <button class="btn" onclick="">導覽連結一</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn" onclick="">導覽連結二</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn" onclick="">導覽連結三</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </body>
 </html>
@@ -42,5 +52,11 @@
     });
     function signOut(){
         window.ipcRenderer.send("userSingOutFromMainWindow",CurrentUser);
+    }
+    function Query(){        
+        let QueryString = document.getElementById("QueryString").value;
+        
+        document.getElementById("QueryString").value=null;
+        window.ipcRenderer.send("QueryStringCommunicationTest",QueryString);
     }
 </script>

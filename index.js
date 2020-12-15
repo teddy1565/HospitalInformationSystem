@@ -157,6 +157,7 @@ function indexWindow(CurrentUser){
             preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
         }
     });
+    mainWindow.webContents.openDevTools();
     mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
     mainWindow.webContents.on('did-finish-load',()=>{
         const CurrentUserResult = {
@@ -333,6 +334,12 @@ ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
     let w = BrowserWindow.getFocusedWindow();
     MainWindow();
     w.close();
+});
+/**
+ * QueryStringCommunicationTest
+ */
+ipcMain.on("QueryStringCommunicationTest",(Event,args)=>{
+    console.log(args);
 });
 /**
  * Login Window IPC

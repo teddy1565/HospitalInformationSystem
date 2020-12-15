@@ -3,7 +3,7 @@ const {contextBridge,ipcRenderer} = require('electron');
 contextBridge.exposeInMainWorld(
     "ipcRenderer", {
         send: (channel, data) => {
-            let validChannels = ["userSingOutFromMainWindow"];// whitelist channels
+            let validChannels = ["userSingOutFromMainWindow","QueryStringCommunicationTest"];// whitelist channels
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
             }
