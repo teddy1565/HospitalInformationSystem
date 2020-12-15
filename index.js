@@ -23,6 +23,9 @@ const path = require('path');
  */
 const dicomParse = require('dicom-parser');
 const { web } = require('webpack');
+const DICOMTagsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/DICOMTagsProtocol.json`)));
+const ModalityProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/ModalityProtocol.json`)));
+const SOPsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/SOPs.json`)));
 /**
  * ConfigPath
  */
@@ -45,12 +48,10 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 /**
  * ===========================To Do List=============================
  * research:
- *          1. contextIsolation & nodeIntegration
- *          2. /src/Method/PDFConvert.js -- promise & sync  problem
- *          3. platform(windows) node_modules(canvas) when it BuildPackage has problem 
+ *          1. /src/Method/PDFConvert.js -- promise & sync  problem
+ *          2. platform(windows) node_modules(canvas) when it BuildPackage has problem 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
- *          4. BootStrap 切版
- *          5. NodeIntegration 修改 使用preload載入ipcRenderer 以對應下一版本更新及安全性問題
+ *          3. BootStrap 切版 
  */
 
 /**
