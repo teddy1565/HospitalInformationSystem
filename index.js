@@ -1,5 +1,5 @@
 /**
- * Declare and import Module
+ * ============================= Declare and import Module =============================
  */
 
 /**
@@ -32,10 +32,13 @@ const SOPsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src
 const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
 const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)));
 const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/BrowserPreloadScript/RenderScriptPath.json")));
+
+//============================= END =============================
+
+
 /**
  * ===========================Code Test Zone==============================
  */
-
 
 
 /**
@@ -54,8 +57,12 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
  *          3. BootStrap 切版 
  */
 
+//================================ END ============================================
+
+//================================= Program ==================================
+//============================= Window Block =================================
 /**
- * Menu setup
+ * MainMenu template setup
  */
 const MainWindowMenuSetupTemplate = [
     {
@@ -123,14 +130,18 @@ const MainWindowMenuSetupTemplate = [
 ];
 
 /**
- * main program
+ * check WorkList status (It not good and danger , will fix)
  */
-
 function MainProgramSetup(){
     fs.readFile(`${__dirname}/${ConfigPath.SysConfig.dbConnectionConfig}`,(dbconfig)=>{
         WLLinkTest(dbconfig);
     })
 }
+/**
+ * Main Window (will change variable name)
+ * @param {string} CurrentUser -- Pass CurrentUser ID
+ * @returns {void}
+ */
 function indexWindow(CurrentUser){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
@@ -154,6 +165,9 @@ function indexWindow(CurrentUser){
         mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
     });
 }
+/**
+ * Login Window
+ */
 function MainWindow(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
     WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
@@ -193,46 +207,8 @@ function MainWindow(){
         mainWindow.webContents.send("loadBG","1");
     });
 }
-app.whenReady().then(MainWindow);
-/**
- * =========================================================
- */
-/**
- * SubProgram
- */
-/**
- * Create a new BrowserWindow where study on examination
- */
-function Examination(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-    let ExaminationWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname,`${RenderScriptPath.capture_test}`)
-        }
-    });
-    //ExaminationWindow.webContents.openDevTools();
-    ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
-}
-/**
- * Create a new BrowserWindow for setup WorkList Options
- */
-function WorkListSettingWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
-    WindowConfig.width = parseInt(WindowConfig.width);
-    WindowConfig.height = parseInt(WindowConfig.heigth);
-    let WorkListSettingWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true
-        }
-    });
-    WorkListSettingWindow.loadFile(path.join(`${__dirname}${RenderPath.WorkListSettingWindow}`));
-}
+app.whenReady().then(MainWindow);//application setup
+
 function JPEGtoDICOM_Transfer_Window(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.JTDtranslatorConfig}`))); 
     let JTDTransferWindow = new BrowserWindow({
@@ -255,6 +231,47 @@ function PDFConverterKit_Window(){
     });
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
 }
+
+
+/**
+ * ==================== Function Block =====================
+ */
+/**
+ * Create a new BrowserWindow where study on examination
+ */
+function Examination(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let ExaminationWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname,`${RenderScriptPath.capture_test}`)
+        }
+    });
+    //ExaminationWindow.webContents.openDevTools();
+    ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
+}
+/**
+ * Create a new BrowserWindow for setup WorkList Options
+ * Change MainMenu label about WorkList sataus
+ * This function not good Will fix
+ */
+function WorkListSettingWindow(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
+    WindowConfig.width = parseInt(WindowConfig.width);
+    WindowConfig.height = parseInt(WindowConfig.heigth);
+    let WorkListSettingWindow = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true
+        }
+    });
+    WorkListSettingWindow.loadFile(path.join(`${__dirname}${RenderPath.WorkListSettingWindow}`));
+}
+
 function userLogin(){
     return true;
 }
@@ -262,7 +279,8 @@ function userLogin(){
  * =========================================================
  */
 /**
- * NetWork Connection
+ * NetWork functions
+ * Example: upload/download/GET/POST.....blablabla
  */
 
 /**
@@ -299,9 +317,11 @@ function WLLinkTest(dbConfig){
  * IPC-communication
  */
 /**
+ * MainWindow IPC
+ */
+/**
  * MainWinodw user SingOut --test
  */
-
 ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
     let LocalUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let LocalUsersUpdate = [];
@@ -314,6 +334,9 @@ ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
     MainWindow();
     w.close();
 });
+/**
+ * Login Window IPC
+ */
 /**
  * GetLoginWindow Background config --test
  */
@@ -328,13 +351,8 @@ ipcMain.on("GetBGconfig",(Event,args)=>{
     });
 });
 /**
- * Leave Application
- */
-ipcMain.on("LeaveApplication",(Event,args)=>{
-    app.quit();
-});
-/**
- * MainWindow LoginIn  --test
+ * When user login, then check user data
+ * If approved , close current window(Login) and build a new window(Main)
  */
 ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     let users = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
@@ -355,10 +373,20 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     }
 });
 /**
- * =========================================================
+ * Global IPC
  */
 /**
- * Application End
+ * Leave Application
+ */
+ipcMain.on("LeaveApplication",(Event,args)=>{
+    app.quit();
+});
+
+
+//===================  Application Global Event ============================
+/**
+ * Description:
+ *  When close all window, stop application process
  */
 app.on('window-all-closed',()=>{
     app.quit();
