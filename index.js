@@ -22,7 +22,6 @@ const path = require('path');
  * Dicom Modules
  */
 const dicomParse = require('dicom-parser');
-const { web } = require('webpack');
 const DICOMTagsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/DICOMTagsProtocol.json`)));
 const ModalityProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/ModalityProtocol.json`)));
 const SOPsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/SOPs.json`)));
@@ -421,7 +420,12 @@ ipcMain.on("GETImage",(Event,args)=>{
     let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
     let t1 = performance.now();
     let study = fs.readdirSync(path);
-    Event.reply("Info",`一共${study.length-1}份Study`);
+    let conts=0;
+    for(let i in study){
+        if(study[i][0]==".")continue;
+        conts++;
+    }
+    Event.reply("Info",`一共${conts}份Study`);
     let count=1;
     for(let i in study){
         if(study[i][0]==".")continue;
@@ -454,6 +458,8 @@ ipcMain.on("GETImage",(Event,args)=>{
                     }else{
                         if(dirs[i]=="DICOMDIR")return;
                         fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
+                            //console.log(dicomParse.parseDicom(data));
+                            //費時操作應由childProcess執行 待修正
                             data = {
                                 "Study":`${study}`,
                                 "FileName":`${StudyDirs}_${dirs[i]}`,

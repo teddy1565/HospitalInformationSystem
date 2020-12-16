@@ -39,7 +39,6 @@
     "electron": "^11.0.3",
     "electron-builder": "^22.9.1",
     "electron-rebuild": "^2.3.4",
-    "electron-webpack": "^2.8.2",
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {

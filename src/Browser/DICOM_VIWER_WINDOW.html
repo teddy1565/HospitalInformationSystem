@@ -1,17 +1,21 @@
 <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-<script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
+
 <html>
     <head>
-        <script type="module" src="../../node_modules/hammerjs/hammer.js"></script>
-        <script type="module" src="../../node_modules/cornerstone-core/dist/cornerstone.js"></script>
-        <script type="module" src="../../node_modules/cornerstone-math/dist/cornerstoneMath.js"></script>
-        <script type="module" src="../../node_modules/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js"></script>
-        <script type="module" src="../../node_modules/cornerstone-tools/dist/cornerstoneTools.js"></script>
+        <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
         <link rel="stylesheet" href="../UIresource/bootstrap-4.5.3-dist/css/bootstrap.css">
         <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-core/dist/cornerstone.min.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-math/dist/cornerstoneMath.min.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-tools/dist/cornerstoneTools.min.js"></script>
+        <script type="module" src="../../node_modules/hammerjs/hammer.js"></script>
+        <script type="module" src="../../node_modules/dicom-parser/dist/dicomParser.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js"></script>
     </head>
     <body>
-        
+        <div id="dicomImage" style="width:512px;height:512px">
+
+        </div>
         <div class="container">
             <button class="btn btn-success" onclick="load()">LOAD IMAGE</button>
             <button class="btn btn-success" onclick="dcm_sqrt()">DICOM排序</button>
@@ -22,17 +26,15 @@
         <div id="infoBoard">
 
         </div>
-        <div id="dicomImage" style="width:512px;height:512px">
-
-        </div>
+        
     </body>
 </html>
 <script>
     function openDICOM(){
-        let imageId = images[0].Data[0].Data.toString('base64');
+        let imageId = images[0].Data[0].Data;
         let element = document.getElementById('dicomImage');
         cornerstone.enable(element);
-        cornerstone.loadImage(imageId).then(function(image) {
+        cornerstone.loadAndCacheImage("1").then(function(image) {
             cornerstone.displayImage(element, image);
         });
     }
