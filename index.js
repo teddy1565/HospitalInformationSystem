@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer} = require('electron');
 
 /**
  * File system
@@ -235,20 +235,6 @@ function PDFConverterKit_Window(){
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
 }
 
-function DICOM_VIWER_WINDOW(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-    let win = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
-        }
-    });
-    win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
-}
-
 /**
  * ==================== Function Block =====================
  */
@@ -412,4 +398,65 @@ ipcMain.on("LeaveApplication",(Event,args)=>{
  */
 app.on('window-all-closed',()=>{
     app.quit();
+});
+
+//================== Test and Temp ========================
+
+function DICOM_VIWER_WINDOW(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let win = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
+        }
+    });
+    win.webContents.openDevTools();
+    win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
+}
+ipcMain.on("GETImage",(Event,args)=>{
+    let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
+    let study = fs.readdirSync(path);
+    for(let i in study){
+        if(study[i][0]==".")continue;
+        fs.stat(`${path}/${study[i]}`,(err,stat)=>{
+            if(stat.isDirectory()){
+                GetSeries(`${path}/${study[i]}`,study[i],study[i]);
+            }else{
+                if(study[i]=="DICOMDIR")return;
+                fs.readFile(`${path}/${study[i]}`,(err,data)=>{
+                    data = {
+                        "Study":`${study[i]}`,
+                        "FileName":`${study[i]}`,
+                        "Data":data
+                    }
+                    Event.reply("FILE",data);
+                });
+            }
+        });
+    }
+    function GetSeries(path,study,StudyDirs){
+        fs.readdir(path,(err,dirs)=>{
+            for(let i in dirs){
+                if(dirs[i][0]==".")continue;
+                fs.stat(`${path}/${dirs[i]}`,(err,stat)=>{
+                    if(stat.isDirectory()){
+                        GetSeries(`${path}/${dirs[i]}`,study,`${StudyDirs}_${dirs[i]}`);
+                    }else{
+                        if(dirs[i]=="DICOMDIR")return;
+                        fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
+                            data = {
+                                "Study":`${study}`,
+                                "FileName":`${StudyDirs}_${dirs[i]}`,
+                                "Data":data
+                            }
+                            Event.reply("FILE",data);
+                        });
+                    }
+                });
+            }
+        });
+    }
 });

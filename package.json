@@ -39,10 +39,12 @@
     "electron": "^11.0.3",
     "electron-builder": "^22.9.1",
     "electron-rebuild": "^2.3.4",
+    "electron-webpack": "^2.8.2",
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
     "assert": "^2.0.0",
+    "babel-loader": "^8.2.2",
     "body-parser": "^1.19.0",
     "canvas": "^2.6.1",
     "cornerstone-core": "^2.3.0",
