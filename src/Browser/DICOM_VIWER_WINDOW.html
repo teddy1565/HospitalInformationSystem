@@ -11,17 +11,31 @@
         <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
     </head>
     <body>
+        
         <div class="container">
             <button class="btn btn-success" onclick="load()">LOAD IMAGE</button>
+            <button class="btn btn-success" onclick="dcm_sqrt()">DICOM排序</button>
             <button class="btn btn-warning" onclick="clearInfo()">清除infoBoard</button>
             <button class="btn btn-danger" onclick="clearImageList()">清除記憶體</button>
+            <button class="btn btn-success" onclick="openDICOM()">開啟檔案</button>
         </div>
         <div id="infoBoard">
+
+        </div>
+        <div id="dicomImage" style="width:512px;height:512px">
 
         </div>
     </body>
 </html>
 <script>
+    function openDICOM(){
+        let imageId = images[0].Data[0].Data.toString('base64');
+        let element = document.getElementById('dicomImage');
+        cornerstone.enable(element);
+        cornerstone.loadImage(imageId).then(function(image) {
+            cornerstone.displayImage(element, image);
+        });
+    }
     let images=[];
     function load(){
         window.ipcRenderer.send("GETImage","GiveMeImage");
@@ -33,10 +47,6 @@
     });
     window.ipcRenderer.receive("Info",(args)=>{
         document.getElementById("infoBoard").innerHTML+=`<p>${args}</p>`;
-        if(args=="DONE"){
-            document.getElementById("infoBoard").innerHTML=`<p>${args}</p>`;
-            DICOM_sqrt(images)
-        }
     });
     function DICOM_sqrt(images){
         let Studys=[];
@@ -65,5 +75,8 @@
     }
     function clearImageList(){
         images=[];
+    }
+    function dcm_sqrt(){
+        images = DICOM_sqrt(images);
     }
 </script>
