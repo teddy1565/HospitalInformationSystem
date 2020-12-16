@@ -4,5 +4,6 @@
     "JpgToDicom":"./src/BrowserPreloadScript/JTD.js",
     "login":"./src/BrowserPreloadScript/Login.js",
     "PDFConverterKit":"./src/BrowserPreloadScript/PDFConverterKit.js",
-    "WorkListSetting":"./src/BrowserPreloadScript/WorkListSetting.js"
+    "WorkListSetting":"./src/BrowserPreloadScript/WorkListSetting.js",
+    "DICOM_VIWER":"./src/BrowserPreloadScript/DICOM_VIWER.js"
 }

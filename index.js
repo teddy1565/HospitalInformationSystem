@@ -100,6 +100,9 @@ const MainWindowMenuSetupTemplate = [
                         }
                     }
                 ]
+            },
+            {
+                "label":"Dicom Viwer",click(){DICOM_VIWER_WINDOW();}
             }
         ]
     },
@@ -157,7 +160,6 @@ function indexWindow(CurrentUser){
             preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
         }
     });
-    mainWindow.webContents.openDevTools();
     mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
     mainWindow.webContents.on('did-finish-load',()=>{
         const CurrentUserResult = {
@@ -233,6 +235,19 @@ function PDFConverterKit_Window(){
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
 }
 
+function DICOM_VIWER_WINDOW(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let win = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
+        }
+    });
+    win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
+}
 
 /**
  * ==================== Function Block =====================

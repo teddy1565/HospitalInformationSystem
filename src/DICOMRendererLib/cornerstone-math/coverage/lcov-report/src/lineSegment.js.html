@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/lineSegment.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> lineSegment.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.22% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>1/45</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.22% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>1/45</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { sign } from './math.js';
+&nbsp;
+// Based on  http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+function sqr (x) <span class="fstat-no" title="function not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >  return x * x;</span>
+}
+&nbsp;
+function dist2 (v, w) <span class="fstat-no" title="function not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >  return sqr(v.x - w.x) + sqr(v.y - w.y);</span>
+}
+&nbsp;
+function distanceToPointSquared (lineSegment, point) <span class="fstat-no" title="function not covered" >{</span>
+  const l2 = <span class="cstat-no" title="statement not covered" >dist2(lineSegment.start, lineSegment.end);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if(l2 === 0) {</span>
+<span class="cstat-no" title="statement not covered" >    return dist2(point, lineSegment.start);</span>
+  }
+  const t = <span class="cstat-no" title="statement not covered" >((point.x - lineSegment.start.x) * (lineSegment.end.x - lineSegment.start.x) +</span>
+        (point.y - lineSegment.start.y) * (lineSegment.end.y - lineSegment.start.y)) / l2;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if(t &lt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >    return dist2(point, lineSegment.start);</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if(t &gt; 1) {</span>
+<span class="cstat-no" title="statement not covered" >    return dist2(point, lineSegment.end);</span>
+  }
+&nbsp;
+  const pt = <span class="cstat-no" title="statement not covered" >{</span>
+    x: lineSegment.start.x + t * (lineSegment.end.x - lineSegment.start.x),
+    y: lineSegment.start.y + t * (lineSegment.end.y - lineSegment.start.y)
+  };
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return dist2(point, pt);</span>
+}
+&nbsp;
+function distanceToPoint (lineSegment, point) <span class="fstat-no" title="function not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >  return Math.sqrt(distanceToPointSquared(lineSegment, point));</span>
+}
+&nbsp;
+// Returns intersection points of two lines
+function intersectLine (lineSegment1, lineSegment2) <span class="fstat-no" title="function not covered" >{</span>
+  const intersectionPoint = <span class="cstat-no" title="statement not covered" >{};</span>
+&nbsp;
+  let x1 = <span class="cstat-no" title="statement not covered" >lineSegment1.start.x,</span>
+    y1 = <span class="cstat-no" title="statement not covered" >lineSegment1.start.y,</span>
+    x2 = <span class="cstat-no" title="statement not covered" >lineSegment1.end.x,</span>
+    y2 = <span class="cstat-no" title="statement not covered" >lineSegment1.end.y,</span>
+    x3 = <span class="cstat-no" title="statement not covered" >lineSegment2.start.x,</span>
+    y3 = <span class="cstat-no" title="statement not covered" >lineSegment2.start.y,</span>
+    x4 = <span class="cstat-no" title="statement not covered" >lineSegment2.end.x,</span>
+    y4 = <span class="cstat-no" title="statement not covered" >lineSegment2.end.y;</span>
+&nbsp;
+  // Coefficients of line equations
+  let a1, a2, b1, b2, c1, c2;
+  // Sign values
+  let r1, r2, r3, r4;
+&nbsp;
+  // Intermediate values
+  let denom, num;
+&nbsp;
+  // Compute a1, b1, c1, where line joining points 1 and 2 is "a1 x  +  b1 y  +  c1  =  0"
+<span class="cstat-no" title="statement not covered" >  a1 = y2 - y1;</span>
+<span class="cstat-no" title="statement not covered" >  b1 = x1 - x2;</span>
+<span class="cstat-no" title="statement not covered" >  c1 = x2 * y1 - x1 * y2;</span>
+&nbsp;
+  // Compute r3 and r4
+<span class="cstat-no" title="statement not covered" >  r3 = a1 * x3 + b1 * y3 + c1;</span>
+<span class="cstat-no" title="statement not covered" >  r4 = a1 * x4 + b1 * y4 + c1;</span>
+&nbsp;
+  /* Check signs of r3 and r4.  If both point 3 and point 4 lie on
+    * same side of line 1, the line segments do not intersect.
+    */
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (r3 !== 0 &amp;&amp;</span>
+        r4 !== 0 &amp;&amp;
+        sign(r3) === sign(r4)) {
+<span class="cstat-no" title="statement not covered" >    return;</span>
+  }
+&nbsp;
+  // Compute a2, b2, c2
+<span class="cstat-no" title="statement not covered" >  a2 = y4 - y3;</span>
+<span class="cstat-no" title="statement not covered" >  b2 = x3 - x4;</span>
+<span class="cstat-no" title="statement not covered" >  c2 = x4 * y3 - x3 * y4;</span>
+&nbsp;
+  // Compute r1 and r2
+<span class="cstat-no" title="statement not covered" >  r1 = a2 * x1 + b2 * y1 + c2;</span>
+<span class="cstat-no" title="statement not covered" >  r2 = a2 * x2 + b2 * y2 + c2;</span>
+&nbsp;
+  /* Check signs of r1 and r2.  If both point 1 and point 2 lie
+    * on same side of second line segment, the line segments do
+    * not intersect.
+    */
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (r1 !== 0 &amp;&amp;</span>
+        r2 !== 0 &amp;&amp;
+        sign(r1) === sign(r2)) {
+<span class="cstat-no" title="statement not covered" >    return;</span>
+  }
+&nbsp;
+  /* Line segments intersect: compute intersection point.
+    */
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  denom = (a1 * b2) - (a2 * b1);</span>
+&nbsp;
+  /* The denom/2 is to get rounding instead of truncating.  It
+    * is added or subtracted to the numerator, depending upon the
+    * sign of the numerator.
+    */
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  num = (b1 * c2) - (b2 * c1);</span>
+  const x = <span class="cstat-no" title="statement not covered" >parseFloat(num / denom);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  num = (a2 * c1) - (a1 * c2);</span>
+  const y = <span class="cstat-no" title="statement not covered" >parseFloat(num / denom);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  intersectionPoint.x = x;</span>
+<span class="cstat-no" title="statement not covered" >  intersectionPoint.y = y;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return intersectionPoint;</span>
+}
+&nbsp;
+// Module exports
+const lineSegment = {
+  distanceToPoint,
+  intersectLine
+};
+&nbsp;
+export default lineSegment;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Oct 01 2020 18:16:52 GMT+0200 (Central European Summer Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
