@@ -417,10 +417,15 @@ function DICOM_VIWER_WINDOW(){
     win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
 }
 ipcMain.on("GETImage",(Event,args)=>{
+    let performance = require('perf_hooks').performance;
     let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
+    let t1 = performance.now();
     let study = fs.readdirSync(path);
+    Event.reply("Info",`一共${study.length-1}份Study`);
+    let count=1;
     for(let i in study){
         if(study[i][0]==".")continue;
+        Event.reply("Info",`正在載入第${count++}份Study`);
         fs.stat(`${path}/${study[i]}`,(err,stat)=>{
             if(stat.isDirectory()){
                 GetSeries(`${path}/${study[i]}`,study[i],study[i]);
@@ -437,6 +442,8 @@ ipcMain.on("GETImage",(Event,args)=>{
             }
         });
     }
+    let t2 = performance.now();
+    Event.reply("Info",`DONE: 一共耗時${t2-t1}秒`);
     function GetSeries(path,study,StudyDirs){
         fs.readdir(path,(err,dirs)=>{
             for(let i in dirs){

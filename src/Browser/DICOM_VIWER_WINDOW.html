@@ -13,8 +13,10 @@
     <body>
         <div class="container">
             <button class="btn btn-success" onclick="load()">LOAD IMAGE</button>
+            <button class="btn btn-warning" onclick="clearInfo()">清除infoBoard</button>
+            <button class="btn btn-danger" onclick="clearImageList()">清除記憶體</button>
         </div>
-        <div id="imbuf">
+        <div id="infoBoard">
 
         </div>
     </body>
@@ -23,9 +25,18 @@
     let images=[];
     function load(){
         window.ipcRenderer.send("GETImage","GiveMeImage");
+        images=[];
+        document.getElementById("infoBoard").innerHTML="";
     }
     window.ipcRenderer.receive("FILE",(args)=>{
         images.push(args);
+    });
+    window.ipcRenderer.receive("Info",(args)=>{
+        document.getElementById("infoBoard").innerHTML+=`<p>${args}</p>`;
+        if(args=="DONE"){
+            document.getElementById("infoBoard").innerHTML=`<p>${args}</p>`;
+            DICOM_sqrt(images)
+        }
     });
     function DICOM_sqrt(images){
         let Studys=[];
@@ -48,5 +59,11 @@
             }
         }
         return Studys;
+    }
+    function clearInfo(){
+        document.getElementById("infoBoard").innerHTML = "";
+    }
+    function clearImageList(){
+        images=[];
     }
 </script>
