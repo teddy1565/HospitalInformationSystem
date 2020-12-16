@@ -45,7 +45,9 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
  *      1.contextIsolation:true 會導致 preload 及 NodeIntegration失效
  *      2.不使用nodeIntegration下 需同時開啟contextIsolation和worldSafeExecuteJavaScript
  *        才能夠注入preload script
- *      
+ *      3.cornerstone模組只能在前端使用,且若出現Cannot read property 'webpackHotUpdate_name_' of undefined等問題
+ *        需要到source部分 將this["webpackHotUpdate_name_"]改為window["webpackHotUpdate_name_"]
+ *        解決辦法參考:https://github.com/cornerstonejs/cornerstoneWADOImageLoader/issues/350
  */
 /**
  * ===========================To Do List=============================
