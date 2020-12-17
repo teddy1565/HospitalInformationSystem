@@ -7,18 +7,11 @@
         <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
         <script type="module" src="../../node_modules/cornerstone-core/dist/cornerstone.min.js"></script>
         <script type="module" src="../../node_modules/cornerstone-math/dist/cornerstoneMath.min.js"></script>
-        <script type="module" src="../../node_modules/cornerstone-tools/dist/cornerstoneTools.min.js">
-            cornerstoneTools.external.cornerstone=cornerstone;
-        </script>
+        <script type="module" src="../../node_modules/cornerstone-tools/dist/cornerstoneTools.min.js"> </script>
         <script type="module" src="../../node_modules/hammerjs/hammer.js"></script>
         <script type="module" src="../../node_modules/dicom-parser/dist/dicomParser.js"></script>
         <script type="module" src="../../node_modules/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js">
-            cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-            var config = {
-                maxWebWorkers: navigator.hardwareConcurrency || 1,
-                startWebWorkersOnDemand : true,
-            };
-            cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+            
         </script>
     </head>
     <body>
@@ -42,10 +35,26 @@
 </html>
 <script>
     
+    window.onload = ()=>{
+        function reg(patID){
+            const promise = new Promise((resolve,reject)=>{
+                resolve(images[0].Data[0].Data);
+            });
+            return {promise};
+        }
+        cornerstone.registerUnknownImageLoader(reg);
+        cornerstoneTools.external.cornerstone=cornerstone;
+        cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+        var config = {
+            maxWebWorkers: navigator.hardwareConcurrency || 1,
+            startWebWorkersOnDemand : true,
+        };
+        cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    }
     function openDICOM(){
         
         let element = document.getElementById('dicomImage');
-        let imageId = 'CustomLoader://fuck.dcm';
+        let imageId = 'http://a/fuck.dcm';
         cornerstone.enable(element);
         cornerstone.loadImage(imageId).then((image)=>{
             cornerstone.displayImage(element, image);
@@ -62,7 +71,6 @@
     function load(){
         window.ipcRenderer.send("GETImage","GiveMeImage");
         document.getElementById("infoBoard").innerHTML="";
-        cornerstone.registerImageLoader("CustomLoader",SelfImageLoader);
     }
     window.ipcRenderer.receive("FILE",(args)=>{
         images.push(args);
@@ -103,48 +111,4 @@
     function dcm_sqrt(){
         images = DICOM_sqrt(images);
     }
-    function SelfImageLoader(ImgID){
-        const promise = new Promise((resolve,reject)=>{
-            let result = images[0].Data[0].Data;
-            resolve(result);
-        });
-        return {
-            promise
-        };
-    }
-    // function merg(){
-    //     let r=[];
-    //     for(let i in std.elements){
-    //         r.push(std.elements[i].tag);
-    //     }
-    //     window.ipcRenderer.send("merg",r);
-    // }
-    // let currentStudy;
-    // function dcmp(){
-    //     //var imagePixelModule = imageID.PixelModuleSel;
-    //     currentStudy = dicomParser.parseDicom(images[0].Data[0].Data);
-    //     let result = {
-    //         samplesPerPixel: currentStudy.string('x00280002'),/* 0028,0002 */
-    //         photometricInterpretation: currentStudy.string('x00280004'),/* 0028,0004 */
-    //         planarConfiguration: currentStudy.string('x00280006'),/* 0028,0006 */
-    //         rows: currentStudy.string('x00280010'),/* 0028,0010 */
-    //         columns: currentStudy.string('x00280011'),/* 0028,0011 */
-    //         bitsAllocated: currentStudy.string('x00280100'),/* 0028,0100 */
-    //         bitsStored: currentStudy.string('x00280101'),/* 0028,0101 */
-    //         pixelRepresentation: currentStudy.string('x00280103'),/* 0028,0103 */
-    //         smallestPixelValue: currentStudy.string('x00280108'),/* 0028,0108 */
-    //         largestPixelValue: currentStudy.string('x00280107'),/* 0028,0107 */
-    //         redPaletteColorLookupTableDescriptor: currentStudy.string('x00281101'),/* 0028,1101 */
-    //         greenPaletteColorLookupTableDescriptor: currentStudy.string('x00281102'),/* 0028,1102 */
-    //         bluePaletteColorLookupTableDescriptor: currentStudy.string('x00281103'),/* 0028,1103 */
-    //         redPaletteColorLookupTableData: currentStudy.string('x00281201'),/* 0028,1201 */
-    //         greenPaletteColorLookupTableData: currentStudy.string('x00281202'),/* 0028,1202 */
-    //         bluePaletteColorLookupTableData: currentStudy.string('x00281203'),/* 0028,1203 */
-    //         pixelData: undefined // populated later after decoding
-    //     }
-    //     return result;
-    // }
-    /*
-        
-    */
 </script>
