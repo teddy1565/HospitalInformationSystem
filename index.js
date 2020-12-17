@@ -462,6 +462,10 @@ ipcMain.on("GETImage",(Event,args)=>{
                         fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
                             //console.log(dicomParse.parseDicom(data));
                             //費時操作應由childProcess執行 待修正
+                            // let d = dicomParse.parseDicom(data);
+                            // let pixelDataEl = d.elements.x7fe00010;
+                            // console.log(pixelDataEl.length);
+                            // let pd = new Uint8Array(d.byteArray.buffer,pixelDataEl.dataOffset,pixelDataEl.length);
                             data = {
                                 "Study":`${study}`,
                                 "FileName":`${StudyDirs}_${dirs[i]}`,
@@ -475,3 +479,29 @@ ipcMain.on("GETImage",(Event,args)=>{
         });
     }
 });
+(()=>{
+    let d = JSON.parse(fs.readFileSync("/Users/zhenkaixiong/Emecca/GateWay/tags.json"));
+    for(let i in d){
+        for(let j in d[i]){
+            d[i][j] = `(${d[i][j][0]}${d[i][j][1]}${d[i][j][2]}${d[i][j][3]},${d[i][j][4]}${d[i][j][5]}${d[i][j][6]}${d[i][j][7]})`;
+        }
+    }
+    console.log(d)
+    let tb = JSON.parse(fs.readFileSync("/Users/zhenkaixiong/Emecca/GateWay/src/DICOMTagsLib/DICOMTagsProtocol.json"));
+    let r=[];
+    for(let i in d){
+        let r2=[];
+        for(let j in d[i]){
+            let r1 = [];
+            for(let k in tb){
+                if(d[i][j]==tb[k].Tag){
+                    r1.push(`${d[i][j]} : ${tb[k].Name}`);
+                    break;
+                }
+            }
+            if(r1.length>0)r2.push(r1);
+        }
+        if(r2.length>0)r.push(r2);
+    }
+    fs.writeFileSync("/Users/zhenkaixiong/Emecca/GateWay/tags1.json",JSON.stringify(r));
+})();
