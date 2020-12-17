@@ -21,7 +21,9 @@
             </canvas>
         </div>
         <div class="container">
+            <input type="text" class="input-group" id="PATID">
             <button class="btn btn-success" onclick="load()">LOAD IMAGE</button>
+            <button class="btn btn-success" onclick="GetStudyList()">取得Study影像清單</button>
             <button class="btn btn-success" onclick="dcm_sqrt()">DICOM排序</button>
             <button class="btn btn-warning" onclick="clearInfo()">清除infoBoard</button>
             <button class="btn btn-danger" onclick="clearImageList()">清除記憶體</button>
@@ -34,7 +36,6 @@
     </body>
 </html>
 <script>
-    
     window.onload = ()=>{
         function reg(patID){
             const promise = new Promise((resolve,reject)=>{
@@ -68,9 +69,13 @@
         });
     }
     let images=[];
+    function GetStudyList(){
+        let PATID = document.getElementById("PATID").value;
+        window.ipcRenderer.send("GETImage",`${PATID}`);
+    }
     function load(){
-        window.ipcRenderer.send("GETImage","GiveMeImage");
-        document.getElementById("infoBoard").innerHTML="";
+        let PATID = document.getElementById("PATID").value;
+        window.ipcRenderer.send("GETImage",`${PATID}`);
     }
     window.ipcRenderer.receive("FILE",(args)=>{
         images.push(args);
@@ -111,4 +116,15 @@
     function dcm_sqrt(){
         images = DICOM_sqrt(images);
     }
+    window.ipcRenderer.receive("StudyList",(args)=>{
+        document.getElementById("infoBoard").innerHTML="";
+        for(let i in args){
+            document.getElementById("infoBoard").innerHTML +=`<p>${args[i]}</p>`;
+        }
+    });
+    // window.ipcRenderer.receive("StudyList",(args)=>{
+    //     for(let i in args){
+    //         document.getElementById("InfoBoard").innerHTML+=`<p>${args[i]}</p>`;
+    //     }
+    // });
 </script>

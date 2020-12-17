@@ -22,6 +22,7 @@ const path = require('path');
  * Dicom Modules
  */
 const dicomParse = require('dicom-parser');
+const cornerstoneOBJ = require('./src/Method/CornerStoneOBJ');
 const DICOMTagsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/DICOMTagsProtocol.json`)));
 const ModalityProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/ModalityProtocol.json`)));
 const SOPsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/SOPs.json`)));
@@ -417,60 +418,110 @@ function DICOM_VIWER_WINDOW(){
     win.webContents.openDevTools();
     win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
 }
-ipcMain.on("GETImage",(Event,args)=>{
+// ipcMain.on("GETImage",(Event,args)=>{
     
-    let performance = require('perf_hooks').performance;
-    let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
-    let t1 = performance.now();
-    let study = fs.readdirSync(path);
-    let conts=0;
-    for(let i in study){
-        if(study[i][0]==".")continue;
-        conts++;
-    }
-    Event.reply("Info",`一共${conts}份Study`);
-    let count=1;
-    for(let i in study){
-        if(study[i][0]==".")continue;
-        Event.reply("Info",`正在載入第${count++}份Study`);
-        fs.stat(`${path}/${study[i]}`,(err,stat)=>{
-            if(stat.isDirectory()){
-                GetSeries(`${path}/${study[i]}`,study[i],study[i]);
-            }else{
-                if(study[i]=="DICOMDIR")return;
-                fs.readFile(`${path}/${study[i]}`,(err,data)=>{
-                    data = {
-                        "Study":`${study[i]}`,
-                        "FileName":`${study[i]}`,
-                        "Data":data
-                    }
-                    Event.reply("FILE",data);
-                });
-            }
-        });
-    }
-    let t2 = performance.now();
-    Event.reply("Info",`DONE: 一共耗時${t2-t1}秒`);
-    function GetSeries(path,study,StudyDirs){
-        fs.readdir(path,(err,dirs)=>{
+//     let performance = require('perf_hooks').performance;
+//     let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
+//     let t1 = performance.now();
+//     let study = fs.readdirSync(path);
+//     let conts=0;
+//     for(let i in study){
+//         if(study[i][0]==".")continue;
+//         conts++;
+//     }
+//     Event.reply("Info",`一共${conts}份Study`);
+//     let count=1;
+//     for(let i in study){
+//         if(study[i][0]==".")continue;
+//         Event.reply("Info",`正在載入第${count++}份Study`);
+//         fs.stat(`${path}/${study[i]}`,(err,stat)=>{
+//             if(stat.isDirectory()){
+//                 GetSeries(`${path}/${study[i]}`,study[i],study[i]);
+//             }else{
+//                 if(study[i]=="DICOMDIR")return;
+//                 fs.readFile(`${path}/${study[i]}`,(err,data)=>{
+//                     data = {
+//                         "Study":`${study[i]}`,
+//                         "FileName":`${study[i]}`,
+//                         "Data":data
+//                     }
+//                     Event.reply("FILE",data);
+//                 });
+//             }
+//         });
+//     }
+//     let t2 = performance.now();
+//     Event.reply("Info",`DONE: 一共耗時${t2-t1}秒`);
+//     function GetSeries(path,study,StudyDirs){
+//         fs.readdir(path,(err,dirs)=>{
+//             for(let i in dirs){
+//                 if(dirs[i][0]==".")continue;
+//                 fs.stat(`${path}/${dirs[i]}`,(err,stat)=>{
+//                     if(stat.isDirectory()){
+//                         GetSeries(`${path}/${dirs[i]}`,study,`${StudyDirs}_${dirs[i]}`);
+//                     }else{
+//                         if(dirs[i]=="DICOMDIR")return;
+//                         fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
+//                             //console.log(dicomParse.parseDicom(data));
+//                             //費時操作應由childProcess執行 待修正
+//                             // let d = dicomParse.parseDicom(data);
+//                             // let pixelDataEl = d.elements.x7fe00010;
+//                             // console.log(pixelDataEl.length);
+//                             // let pd = new Uint8Array(d.byteArray.buffer,pixelDataEl.dataOffset,pixelDataEl.length);
+//                             data = {
+//                                 "Study":`${study}`,
+//                                 "FileName":`${StudyDirs}_${dirs[i]}`,
+//                                 "Data":data
+//                             }
+//                             Event.reply("FILE",data);
+//                         });
+//                     }
+//                 });
+//             }
+//         });
+//     }
+// });
+
+ipcMain.on("GETImage",(Event,args)=>{
+    let DICOMfilePath = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
+    let result = [];
+    fs.readdir(DICOMfilePath,(err,dirs)=>{
+        Event.reply("StudyList",dirs);
+        for(let i in dirs){
+            if(dirs[i]!=args)continue;
+            let Series=dirs[i];
+            fs.stat(`${DICOMfilePath}/${dirs[i]}`,(err,stat)=>{
+                if(stat.isDirectory()){
+                    GetSeries(`${DICOMfilePath}/${dirs[i]}`,Series,args);
+                }else{
+                    fs.readFile(`${DICOMfilePath}/${dirs[i]}`,(err,data)=>{
+                        // let a = new cornerstoneOBJ.image()
+                        data = {
+                            Series:`${Series}`,
+                            PATID:`${args}`,
+                            FileName:`${dirs[i]}`,
+                            Data:data
+                        }
+                        Event.reply("FILE",data);
+                    });
+                }
+            });
+        }
+    });
+    
+    function GetSeries(FilePaths,Series,args){
+        fs.readdir(FilePaths,(err,dirs)=>{
             for(let i in dirs){
-                if(dirs[i][0]==".")continue;
-                fs.stat(`${path}/${dirs[i]}`,(err,stat)=>{
+                fs.stat(`${FilePaths}/${dirs[i]}`,(err,stat)=>{
                     if(stat.isDirectory()){
-                        GetSeries(`${path}/${dirs[i]}`,study,`${StudyDirs}_${dirs[i]}`);
+                        GetSeries(`${FilePaths}/${dirs[i]}`,`${Series}_${dirs[i]}`,args);
                     }else{
-                        if(dirs[i]=="DICOMDIR")return;
-                        fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
-                            //console.log(dicomParse.parseDicom(data));
-                            //費時操作應由childProcess執行 待修正
-                            // let d = dicomParse.parseDicom(data);
-                            // let pixelDataEl = d.elements.x7fe00010;
-                            // console.log(pixelDataEl.length);
-                            // let pd = new Uint8Array(d.byteArray.buffer,pixelDataEl.dataOffset,pixelDataEl.length);
+                        fs.readFile(`${FilePaths}/${dirs[i]}`,(err,data)=>{
                             data = {
-                                "Study":`${study}`,
-                                "FileName":`${StudyDirs}_${dirs[i]}`,
-                                "Data":data
+                                Series:`${Series}`,
+                                PATID:`${args}`,
+                                FileName:`${dirs[i]}`,
+                                Data:data
                             }
                             Event.reply("FILE",data);
                         });

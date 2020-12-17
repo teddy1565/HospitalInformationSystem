@@ -239,3 +239,10 @@ class cornerstoneEnabledElement{
 
     }
 }
+
+exports.image = CornerstoneImageOBJ;
+exports.imageStat = cornerstoneImageStats;
+exports.LUT = CornerstoneImageOBJ;
+exports.VOI = cornerstoneVOI;
+exports.VEC2 = cornerstonevec2;
+exports.EnabledElement = cornerstoneEnabledElement;
