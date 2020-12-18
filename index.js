@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer, shell} = require('electron');
 
 /**
  * File system
@@ -104,7 +104,15 @@ const MainWindowMenuSetupTemplate = [
                 ]
             },
             {
-                "label":"Dicom Viwer",click(){DICOM_VIWER_WINDOW();}
+                "label":"Dicom Viwer",click(){
+                    DICOM_VIWER_WINDOW();
+                    // EX_M();
+                }
+            },
+            {
+                "label":"工具介紹",click(){
+                    shell.openExternal("https://tools.cornerstonejs.org/examples/");
+                }
             }
         ]
     },
@@ -415,8 +423,22 @@ function DICOM_VIWER_WINDOW(){
             preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
         }
     });
+    
     win.webContents.openDevTools();
     win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
+}
+function EX_M(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let win = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
+        }
+    });
+    win.loadURL("https://rawgit.com/cornerstonejs/cornerstoneWADOImageLoader/master/examples/dicomfile/index.html");
 }
 // ipcMain.on("GETImage",(Event,args)=>{
     
@@ -486,7 +508,7 @@ ipcMain.on("GETImage",(Event,args)=>{
     let DICOMfilePath = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
     let result = [];
     fs.readdir(DICOMfilePath,(err,dirs)=>{
-        Event.reply("StudyList",dirs);
+        console.log(dirs);
         for(let i in dirs){
             if(dirs[i]!=args)continue;
             let Series=dirs[i];
@@ -495,7 +517,7 @@ ipcMain.on("GETImage",(Event,args)=>{
                     GetSeries(`${DICOMfilePath}/${dirs[i]}`,Series,args);
                 }else{
                     fs.readFile(`${DICOMfilePath}/${dirs[i]}`,(err,data)=>{
-                        // let a = new cornerstoneOBJ.image()
+                        let a = new cornerstoneOBJ.image()
                         data = {
                             Series:`${Series}`,
                             PATID:`${args}`,
@@ -512,6 +534,7 @@ ipcMain.on("GETImage",(Event,args)=>{
     function GetSeries(FilePaths,Series,args){
         fs.readdir(FilePaths,(err,dirs)=>{
             for(let i in dirs){
+                if(dirs[i][0]=="."||dirs[i]=="DICOMDIR")continue;
                 fs.stat(`${FilePaths}/${dirs[i]}`,(err,stat)=>{
                     if(stat.isDirectory()){
                         GetSeries(`${FilePaths}/${dirs[i]}`,`${Series}_${dirs[i]}`,args);

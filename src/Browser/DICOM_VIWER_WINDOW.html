@@ -24,7 +24,7 @@
             <input type="text" class="input-group" id="PATID">
             <button class="btn btn-success" onclick="load()">LOAD IMAGE</button>
             <button class="btn btn-success" onclick="GetStudyList()">取得Study影像清單</button>
-            <button class="btn btn-success" onclick="dcm_sqrt()">DICOM排序</button>
+            <!-- <button class="btn btn-success" onclick="dcm_sqrt()">DICOM排序</button> -->
             <button class="btn btn-warning" onclick="clearInfo()">清除infoBoard</button>
             <button class="btn btn-danger" onclick="clearImageList()">清除記憶體</button>
             <button class="btn btn-success" onclick="openDICOM()">開啟檔案</button>
@@ -80,9 +80,6 @@
     window.ipcRenderer.receive("FILE",(args)=>{
         images.push(args);
     });
-    window.ipcRenderer.receive("Info",(args)=>{
-        document.getElementById("infoBoard").innerHTML+=`<p>${args}</p>`;
-    });
     function DICOM_sqrt(images){
         let Studys=[];
         for(let i in images){
@@ -105,26 +102,10 @@
         }
         return Studys;
     }
-    function clearInfo(){
-        document.getElementById("dicomImage").style.display="none";
-        document.getElementById("infoBoard").innerHTML = "";
-    }
     function clearImageList(){
-        document.getElementById("dicomImage").style.display="none";
         images=[];
     }
     function dcm_sqrt(){
         images = DICOM_sqrt(images);
     }
-    window.ipcRenderer.receive("StudyList",(args)=>{
-        document.getElementById("infoBoard").innerHTML="";
-        for(let i in args){
-            document.getElementById("infoBoard").innerHTML +=`<p>${args[i]}</p>`;
-        }
-    });
-    // window.ipcRenderer.receive("StudyList",(args)=>{
-    //     for(let i in args){
-    //         document.getElementById("InfoBoard").innerHTML+=`<p>${args[i]}</p>`;
-    //     }
-    // });
 </script>
