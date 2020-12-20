@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer, shell} = require('electron');
+const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer,dialog, shell} = require('electron');
 
 /**
  * File system
@@ -105,7 +105,8 @@ const MainWindowMenuSetupTemplate = [
             },
             {
                 "label":"Dicom Viwer",click(){
-                    DICOM_VIWER_WINDOW();
+                    DCM_Viwer_V2();
+                    // DICOM_VIWER_WINDOW();
                     // EX_M();
                 }
             },
@@ -440,6 +441,21 @@ function EX_M(){
     });
     win.loadURL("https://rawgit.com/cornerstonejs/cornerstoneWADOImageLoader/master/examples/dicomfile/index.html");
 }
+function DCM_Viwer_V2(){
+    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let win = new BrowserWindow({
+        width:WindowConfig.width,
+        height:WindowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            worldSafeExecuteJavaScript:true,
+            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
+        }
+    });
+    
+    win.webContents.openDevTools();
+    win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_V_WINDOW.html`));
+}
 // ipcMain.on("GETImage",(Event,args)=>{
     
 //     let performance = require('perf_hooks').performance;
@@ -553,4 +569,41 @@ ipcMain.on("GETImage",(Event,args)=>{
             }
         });
     }
+});
+
+ipcMain.on("SelectStudy",(Event,args)=>{
+    if(args!==1)return 0;
+    let win = BrowserWindow.getFocusedWindow();
+    dialog.showOpenDialog(win,{
+        properties:['openFile','openDirectory']
+    }).then(result=>{
+        if(result.canceled===true){
+            Event.reply("Info","No Select");
+        }else{
+            fs.readdir(`${result.filePaths[0]}`,(err,filePaths)=>{
+                if(err){
+                    Event.reply("Info",err);
+                    return 0;
+                }
+                console.log(filePaths);
+                for(let i in filePaths){
+                    if((filePaths[i].match(".DCM")===null))continue;
+                    fs.readFile(path.join(`${result.filePaths}`,`${filePaths[i]}`),(err,data)=>{
+                        if(err)Event.reply("Images",err);
+                        let pixelData = dicomParse.parseDicom(data);
+                        pixelData = new Uint8Array(pixelData.byteArray.buffer,pixelData.elements.x7fe00010.dataOffset,pixelData.elements.x7fe00010.length);
+                        data = {
+                            filePath:`${filePaths[i]}`,
+                            fileData:data,
+                            PixelData:pixelData
+                        };
+                        Event.reply("Images",data);
+                    });
+                }
+            });
+        }
+    }).catch(err => {
+        console.log(err);
+        Event.reply("exceptionErr",err);
+    });
 });
