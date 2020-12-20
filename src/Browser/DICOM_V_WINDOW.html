@@ -47,7 +47,7 @@
             function getPD(){
                 return finded.PixelData;
             }
-            let currentFrame = dicomParser.parseDicom(finded.FileData);
+            let currentFrame = dicomParser.parseDicom(finded.fileData);
             let width = currentFrame.uint16('x00280011');
             let height = currentFrame.uint16('x00280010');
             let minPixelValue = currentFrame.uint16('x00280106')==undefined?0:currentFrame.uint16('x00280106');
@@ -61,7 +61,6 @@
             let rowPixelSpacing = parseInt(PixelSpacing[0]);
             let invert = currentFrame.string('x00720706')==undefined?false:currentFrame.string('x00720706')=="YES"?true:false;
             let sizeInBytes = currentFrame.elements.x7fe00010.length;
-            //let byteArray = currentFrame.
             let image = {
                 imageId:imageID,
                 minPixelValue:minPixelValue,
