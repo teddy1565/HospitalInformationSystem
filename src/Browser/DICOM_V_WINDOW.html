@@ -35,33 +35,37 @@
         function test(){
             cornerstone.loadImage(imageid).then((image)=>{
                 cornerstone.displayImage(ele,image);
+                console.log(image);
             });
         }
         function customImageLoader(imageID){
+            
             let finded = false;
+            let target = imageID.split("//")[1];
             for(let i in DicomImages){
-                if(DicomImages[i].filePath.match(`${imageID}`)!=null)continue;
+                if(DicomImages[i].filePath.match(`${target}`)==null)continue;
                 finded = DicomImages[i];
             }
             if(finded==false)return 0;
             function getPD(){
-                return finded.PixelData;
+                return finded.fileData;
             }
             let currentFrame = dicomParser.parseDicom(finded.fileData);
             let width = currentFrame.uint16('x00280011');
             let height = currentFrame.uint16('x00280010');
             let minPixelValue = currentFrame.uint16('x00280106')==undefined?0:currentFrame.uint16('x00280106');
-            let maxPixelValue = currentFrame.uint16('x00280106')==undefined?255:currentFrame.uint16('x00280107');
+            let maxPixelValue = currentFrame.uint16('x00280106')==undefined?254:currentFrame.uint16('x00280107');
             let slope = currentFrame.string('x00281053')==undefined?1:parseInt(currentFrame.string('x00281053'));
             let intercept = currentFrame.string('x00281052')==undefined?0:parseInt(currentFrame.string('x00281052'));
             let windowCenter = parseInt(currentFrame.string('x00281050'));
             let windowWidth = parseInt(currentFrame.string('x00281051'));
-            let PixelSpacing = currentFrame.string('x00280030')==undefined?[1,1]:currentFrame.string('x00280030').split("\\");
-            let columnPixelSpacing = parseInt(PixelSpacing[1]);
-            let rowPixelSpacing = parseInt(PixelSpacing[0]);
+            let PixelSpacing = currentFrame.string('x00280030')==undefined?[null,null]:[parseInt(currentFrame.string('x00280030').split("\\")[0]),parseInt(currentFrame.string('x00280030').split("\\")[1])];
+            let columnPixelSpacing = PixelSpacing[1];
+            let rowPixelSpacing = PixelSpacing[0];
             let invert = currentFrame.string('x00720706')==undefined?false:currentFrame.string('x00720706')=="YES"?true:false;
-            let sizeInBytes = currentFrame.elements.x7fe00010.length;
+            let sizeInBytes = width*height;
             let image = {
+                filename:finded.filePath,
                 imageId:imageID,
                 minPixelValue:minPixelValue,
                 maxPixelValue:maxPixelValue,
@@ -79,6 +83,7 @@
                 rowPixelSpacing:rowPixelSpacing,
                 invert:invert,
                 sizeInBytes:sizeInBytes,
+                data:currentFrame
             }
 
             return {
