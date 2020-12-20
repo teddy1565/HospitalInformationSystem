@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+<html>
+    <head>
+        <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
+        <link rel="stylesheet" href="../UIresource/bootstrap-4.5.3-dist/css/bootstrap.css">
+        <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-core/dist/cornerstone.min.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-math/dist/cornerstoneMath.min.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-tools/dist/cornerstoneTools.min.js"> </script>
+        <script type="module" src="../../node_modules/hammerjs/hammer.js"></script>
+        <script type="module" src="../../node_modules/dicom-parser/dist/dicomParser.js"></script>
+        <script type="module" src="../../node_modules/cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div id="dicomImage" style="width:512px;height:512px" oncontextmenu="return false" onmousedown="return false">
+            
+            </div>
+            <div class="row justify-content-center">
+                <button class="btn btn-success" onclick="SelectStudy()">選取Study</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        var DicomImages=[];
+        let ele;
+        let imageid = "MyImageLoader://00000";
+        window.onload = ()=>{
+            cornerstoneTools.external.cornerstone = cornerstone;
+            cornerstone.registerImageLoader('MyImageLoader',customImageLoader);
+            ele = document.getElementById("dicomImage");
+            cornerstone.enable(ele);
+        }
+        function test(){
+            cornerstone.loadImage(imageid).then((image)=>{
+                cornerstone.displayImage(ele,image);
+            });
+        }
+        function customImageLoader(imageID){
+            let finded = false;
+            for(let i in DicomImages){
+                if(DicomImages[i].filePath.match(`${imageID}`)!=null)continue;
+                finded = DicomImages[i];
+            }
+            if(finded==false)return 0;
+            function getPD(){
+                return finded.PixelData;
+            }
+            let currentFrame = dicomParser.parseDicom(finded.FileData);
+            let width = currentFrame.uint16('x00280011');
+            let height = currentFrame.uint16('x00280010');
+            let minPixelValue = currentFrame.uint16('x00280106')==undefined?0:currentFrame.uint16('x00280106');
+            let maxPixelValue = currentFrame.uint16('x00280106')==undefined?255:currentFrame.uint16('x00280107');
+            let slope = currentFrame.string('x00281053')==undefined?1:parseInt(currentFrame.string('x00281053'));
+            let intercept = currentFrame.string('x00281052')==undefined?0:parseInt(currentFrame.string('x00281052'));
+            let windowCenter = parseInt(currentFrame.string('x00281050'));
+            let windowWidth = parseInt(currentFrame.string('x00281051'));
+            let PixelSpacing = currentFrame.string('x00280030')==undefined?[1,1]:currentFrame.string('x00280030').split("\\");
+            let columnPixelSpacing = parseInt(PixelSpacing[1]);
+            let rowPixelSpacing = parseInt(PixelSpacing[0]);
+            let invert = currentFrame.string('x00720706')==undefined?false:currentFrame.string('x00720706')=="YES"?true:false;
+            let sizeInBytes = currentFrame.elements.x7fe00010.length;
+            //let byteArray = currentFrame.
+            let image = {
+                imageId:imageID,
+                minPixelValue:minPixelValue,
+                maxPixelValue:maxPixelValue,
+                slope:slope,
+                intercept:intercept,
+                windowCenter:windowCenter,
+                windowWidth:windowWidth,
+                getPixelData:getPD,
+                rows:height,
+                columns:width,
+                height:height,
+                width:width,
+                color:false,
+                columnPixelSpacing:columnPixelSpacing,
+                rowPixelSpacing:rowPixelSpacing,
+                invert:invert,
+                sizeInBytes:sizeInBytes,
+            }
+
+            return {
+                promise:new Promise((resolve)=>resolve(image)),
+                cancelFn:undefined
+            }
+        }
+        function SelectStudy(){
+            window.ipcRenderer.send("SelectStudy",1);
+        }
+        window.ipcRenderer.receive("Info",(message)=>{
+            alert(message);
+        });
+        window.ipcRenderer.receive("Images",(Images)=>{
+            DICOM_Sort(DicomImages,Images);
+        });
+        function DICOM_Sort(DicomList,Images){
+            if(DicomList.length==0){
+                DicomList.push(Images);
+            }else{
+                for(let i=0;i<DicomImages.length;i++){
+                    if(parseInt(Images.filePath.split(/IMG|\./)[1])<parseInt(DicomList[i].filePath.split(/IMG|\./)[1])){
+                        DicomList.splice(i,0,Images);
+                        return 0;
+                    }
+                }
+                DicomList.push(Images);
+            }
+        }
+    </script>
+</html>
