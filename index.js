@@ -23,9 +23,6 @@ const path = require('path');
  */
 const dicomParse = require('dicom-parser');
 const cornerstoneOBJ = require('./src/Method/CornerStoneOBJ');
-const DICOMTagsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/DICOMTagsProtocol.json`)));
-const ModalityProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/ModalityProtocol.json`)));
-const SOPsProtocolTable = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/DICOMTagsLib/SOPs.json`)));
 /**
  * ConfigPath
  */
@@ -413,34 +410,6 @@ app.on('window-all-closed',()=>{
 
 //================== Test and Temp ========================
 
-function DICOM_VIWER_WINDOW(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-    let win = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
-        }
-    });
-    
-    win.webContents.openDevTools();
-    win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_VIWER_WINDOW.html`));
-}
-function EX_M(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-    let win = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.DICOM_VIWER}`)
-        }
-    });
-    win.loadURL("https://rawgit.com/cornerstonejs/cornerstoneWADOImageLoader/master/examples/dicomfile/index.html");
-}
 function DCM_Viwer_V2(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
     let win = new BrowserWindow({
@@ -456,69 +425,6 @@ function DCM_Viwer_V2(){
     win.webContents.openDevTools();
     win.loadFile(path.join(`${__dirname}/src/Browser/DICOM_V_WINDOW.html`));
 }
-// ipcMain.on("GETImage",(Event,args)=>{
-    
-//     let performance = require('perf_hooks').performance;
-//     let path = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
-//     let t1 = performance.now();
-//     let study = fs.readdirSync(path);
-//     let conts=0;
-//     for(let i in study){
-//         if(study[i][0]==".")continue;
-//         conts++;
-//     }
-//     Event.reply("Info",`一共${conts}份Study`);
-//     let count=1;
-//     for(let i in study){
-//         if(study[i][0]==".")continue;
-//         Event.reply("Info",`正在載入第${count++}份Study`);
-//         fs.stat(`${path}/${study[i]}`,(err,stat)=>{
-//             if(stat.isDirectory()){
-//                 GetSeries(`${path}/${study[i]}`,study[i],study[i]);
-//             }else{
-//                 if(study[i]=="DICOMDIR")return;
-//                 fs.readFile(`${path}/${study[i]}`,(err,data)=>{
-//                     data = {
-//                         "Study":`${study[i]}`,
-//                         "FileName":`${study[i]}`,
-//                         "Data":data
-//                     }
-//                     Event.reply("FILE",data);
-//                 });
-//             }
-//         });
-//     }
-//     let t2 = performance.now();
-//     Event.reply("Info",`DONE: 一共耗時${t2-t1}秒`);
-//     function GetSeries(path,study,StudyDirs){
-//         fs.readdir(path,(err,dirs)=>{
-//             for(let i in dirs){
-//                 if(dirs[i][0]==".")continue;
-//                 fs.stat(`${path}/${dirs[i]}`,(err,stat)=>{
-//                     if(stat.isDirectory()){
-//                         GetSeries(`${path}/${dirs[i]}`,study,`${StudyDirs}_${dirs[i]}`);
-//                     }else{
-//                         if(dirs[i]=="DICOMDIR")return;
-//                         fs.readFile(`${path}/${dirs[i]}`,(err,data)=>{
-//                             //console.log(dicomParse.parseDicom(data));
-//                             //費時操作應由childProcess執行 待修正
-//                             // let d = dicomParse.parseDicom(data);
-//                             // let pixelDataEl = d.elements.x7fe00010;
-//                             // console.log(pixelDataEl.length);
-//                             // let pd = new Uint8Array(d.byteArray.buffer,pixelDataEl.dataOffset,pixelDataEl.length);
-//                             data = {
-//                                 "Study":`${study}`,
-//                                 "FileName":`${StudyDirs}_${dirs[i]}`,
-//                                 "Data":data
-//                             }
-//                             Event.reply("FILE",data);
-//                         });
-//                     }
-//                 });
-//             }
-//         });
-//     }
-// });
 
 ipcMain.on("GETImage",(Event,args)=>{
     let DICOMfilePath = `${__dirname}/../example_DICOM_image/DICOM_IMAGE`;
