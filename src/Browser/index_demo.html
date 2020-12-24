@@ -5,58 +5,92 @@
 <!-- <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery = module.exports;"></script> -->
 <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
 <html>
-    <head>
-        <link rel="stylesheet" href="../UIresource/bootstrap-4.5.3-dist/css/bootstrap.css">
-        <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
-    </head>
-    <body>
-        <nav class = "navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-            <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">HIMS2020</a>
-            <input class="form-control form-control-dark w-100" id="QueryString" type="text" placeholder="Search" aria-label="Seach">
-            <button class="btn btn-success" onclick="Query()">Query</button>
-            <div style="margin-left: 5%;"></div>
-            <div class="dropdown show">
-                <a class="btn btn-default dropdown-toggle" href="#" role="button" id="UserDashBoard" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <!-- UserID -->
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserDashBoard">
-                  <a class="dropdown-item" href="#" onclick="signOut()">SignOut</a>
-                </div>
-            </div>
-        </nav>
-        <div class = "container-fluit">
-            <div class="row">
-                <nav class="navbar bg-secondary col-md-3 col-lg-2 mr-0 px-3">
-                    <ul class="navbar-nav d-flex">
-                        <li class="nav-item">
-                            <button class="btn" onclick="">導覽連結一</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="btn" onclick="">導覽連結二</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="btn" onclick="">導覽連結三</button>
-                        </li>
-                    </ul>
-                </nav>
+
+<head>
+    <link rel="stylesheet" href="../UIresource/bootstrap-4.5.3-dist/css/bootstrap.css">
+    <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
+    <style>
+        [draggable="true"] {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        .feather{
+            width:16px;
+            height:16px;
+            vertical-align: text-bottom;
+        }
+        .sidebar{
+            position:fixed;
+            z-index:100;
+        }
+    </style>
+</head>
+
+<body>
+    <!--page header-->
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">HIMS2020</a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#rightsidebar" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <input class="form-control form-control-dark w-100" id="QueryString" type="text" placeholder="Search"
+            aria-label="Seach">
+        <button class="btn btn-success" onclick="Query()">Query</button>
+        <div style="margin-left: 5%;"></div>
+        <div class="dropdown show">
+            <a class="btn btn-default dropdown-toggle" href="#" role="button" id="UserDashBoard" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <!-- UserID -->
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserDashBoard">
+                <a class="dropdown-item" href="#" onclick="signOut()">SignOut</a>
             </div>
         </div>
-    </body>
+    </header>
+    <!--right side bar-->
+    <div class="container-fluid">
+        <div class="row">
+            <div id="rightsidebar" class="nav col-md-3 col-lg-2 bg-light sidebar collapse justify-content-center">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="#"class="d-flex align-items-center">
+                            <span class="menu-text">A</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="d-flex align-items-center">
+                            <span class="menu-text">B</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!--<div id="drag-source" draggable="true">
+
+        </div>-->
+</body>
+
 </html>
 <script>
     let CurrentUser;
-    window.ipcRenderer.receive("CurrentUser",(args)=>{
+    window.ipcRenderer.receive("CurrentUser", (args) => {
         args = JSON.parse(args);
         CurrentUser = args.ID;
-        document.getElementById("UserDashBoard").innerHTML +=`<span class="navbar-text">${args.ID}</span>`;
+        document.getElementById("UserDashBoard").innerHTML += `<span class="navbar-text">${args.ID}</span>`;
     });
-    function signOut(){
-        window.ipcRenderer.send("userSingOutFromMainWindow",CurrentUser);
+    function signOut() {
+        window.ipcRenderer.send("userSingOutFromMainWindow", CurrentUser);
     }
-    function Query(){        
+    function Query() {
         let QueryString = document.getElementById("QueryString").value;
-        
-        document.getElementById("QueryString").value=null;
-        window.ipcRenderer.send("QueryStringCommunicationTest",QueryString);
+
+        document.getElementById("QueryString").value = null;
+        window.ipcRenderer.send("QueryStringCommunicationTest", QueryString);
     }
+
 </script>
