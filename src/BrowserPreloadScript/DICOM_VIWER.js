@@ -1,5 +1,7 @@
 const {contextBridge,ipcRenderer} = require('electron');
-
+/**
+ * this file disappear. only for reference
+ */
 contextBridge.exposeInMainWorld(
     "ipcRenderer", {
         send: (channel, data) => {
