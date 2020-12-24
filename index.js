@@ -22,7 +22,6 @@ const path = require('path');
  * Dicom Modules
  */
 const dicomParse = require('dicom-parser');
-const cornerstoneOBJ = require('./src/Method/CornerStoneOBJ');
 /**
  * ConfigPath
  */
