@@ -1,5 +1,6 @@
 {
-    "main":"/src/Browser/index_demo.html",
+    "main":"/src/Browser/main.html",
+    "main_setting":"/src/Browser/main_setting.html",
     "login":"/src/Browser/Login.html",
     "ImageConvertor":{
         "JpgToDICOM":"/src/Browser/JTD.html"

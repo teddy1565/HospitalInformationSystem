@@ -152,7 +152,7 @@ function indexWindow(CurrentUser){
         webPreferences:{
             contextIsolation:true,
             worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.index_demo}`)
+            preload:path.join(__dirname, `${RenderScriptPath.main}`)
         }
     });
     mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
@@ -374,6 +374,24 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     }else{
         
     }
+});
+ipcMain.on("Main_setting_window",(Event,args)=>{
+    if(args!=true){
+        Event.reply("ErrorMessage","has some problem in index.js/ipcMain [Main_setting_window]");
+        return 0;
+    }
+    let w = BrowserWindow.getFocusedWindow(); 
+    let windowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let n = new BrowserWindow({
+        width:windowConfig.width,
+        height:windowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            preload:path.join(__dirname,`${RenderScriptPath.main_setting}`)
+        }
+    });
+    n.loadFile(path.join(`${__dirname}${RenderPath.main_setting}`));
+    w.close();
 });
 /**
  * Global IPC

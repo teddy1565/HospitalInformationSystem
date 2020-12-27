@@ -1,0 +1,317 @@
+<!-- importent! this CSP not safe, it just for test dev -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+<!-- split line -->
+
+<!-- <script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery = module.exports;"></script> -->
+<script type="text/javascript" src="../UIresource/jquery-3.5.1.js" onload="window.$ = window.jQuery"></script>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../UIresource/bootstrap-4.5.3-dist/css/bootstrap.css">
+    <script src="../UIresource/bootstrap-4.5.3-dist/js/bootstrap.bundle.js"></script>
+    <style>
+        [draggable="true"] {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .feather {
+            width: 16px;
+            height: 16px;
+            vertical-align: text-bottom;
+        }
+
+        .sidebar {
+            position: fixed;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <!--page header-->
+    <div id="normal">
+        <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">HIMS2020</a>
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#MainSideBar"
+                aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <input class="form-control form-control-dark w-100" id="QueryString" type="text" placeholder="Search"
+                aria-label="Seach">
+            <button class="btn btn-success" onclick="Query()">Query</button>
+            <div style="margin-left: 5%;"></div>
+            <div class="dropdown show">
+                <a class="btn btn-default dropdown-toggle" href="#" role="button" id="UserDashBoard" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <!-- UserID -->
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserDashBoard">
+                    <a class="dropdown-item" href="#" onclick="Setting()">Setting</a>
+                    <a class="dropdown-item" href="#" onclick="signOut()">Log out</a>
+                </div>
+            </div>
+        </header>
+        <!--right side bar-->
+        <div class="container-fluid">
+            <div class="row">
+                <div id="MainSideBar" class="nav col-md-3 col-lg-2 bg-light sidebar collapse justify-content-center">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <span id="catchStatistics">數據統計</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <span id="firstCatchStatisticsText">今日尚未檢查:</span>
+                            </div>
+                            <div class="col-md-3 text-right">
+                                <span id="firstCatchStatisticsValue">171</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <span id="SecCatchStatisticsText">今日完成檢查:</span>
+                            </div>
+                            <div class="col-md-3 text-right">
+                                <span id="SecCatchStatisticsValue">201</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group-vertical" role="group" id="LeftAndTopSideBarMenu">
+                        <!--左側上方sideBar-->
+                        <button class="btn btn-light" type="button">檢查項目1</button>
+                        <button class="btn btn-light" type="button">檢查項目2</button>
+                        <button class="btn btn-light" type="button">檢查項目3</button>
+                        <button class="btn btn-light" type="button">檢查項目4</button>
+                        <button class="btn btn-light" type="button">檢查項目5</button>
+                        <button class="btn btn-light" type="button">檢查項目6</button>
+                    </div>
+                </div>
+                <div id="MainSideBar" class="nav col-md-3 col-lg-2 bg-light sidebar collapse justify-content-center"
+                    style="bottom:0;">
+                    <div class="btn-group-vertical" role="group" id="LeftAndBottomSideBarMenu">
+                        <!--左側下方sideBar-->
+                        <button class="btn btn-light" type="button">檢查項目1</button>
+                        <button class="btn btn-light" type="button">檢查項目2</button>
+                        <button class="btn btn-light" type="button">檢查項目3</button>
+                        <button class="btn btn-light" type="button">檢查項目4</button>
+                        <button class="btn btn-light" type="button">檢查項目5</button>
+                        <button class="btn btn-light" type="button">檢查項目6</button>
+                    </div>
+                    <!--左側底部的sideBar功能區塊-->
+                    <div class="container-fluid">
+                        <div class="row justify-content-center" id="LeftAndBottomSideBarSubMenu">
+                            <input type="text" class="text justify-content-center" style="text-align: center;"
+                                placeholder="功能欄位1">
+                        </div>
+                    </div>
+                    <div class="container-fluid justify-content-center">
+                        <div class="row justify-content-center" id="LeftAndBottomSideBarSubFuncMenu">
+                            <div class="col col-md-3">
+                                <button class="btn btn-light">A</button>
+                            </div>
+                            <div class="col col-md-3">
+                                <button class="btn btn-light">B</button>
+                            </div>
+                            <div class="col col-md-3">
+                                <button class="btn btn-light">C</button>
+                            </div>
+                            <div class="col col-md-3">
+                                <button class="btn btn-light">D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <!--主頁面-->
+                <div class="col-md-3 col-lg-2"
+                    style="overflow-x: scroll;overflow-y: scroll;overflow: scroll;float: left; max-width: 50%;width: 50%;height: 100vh;">
+                    <!--左側病患資訊顯示-->
+                    <div class="row" id="PatientInfo">
+                        <!--病患資料簡訊-->
+                    </div>
+                    <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color="#6f5499" size="3" />
+                    <div class="row" id="StudyInfo">
+                        <!--此筆檢查的詳細資料-->
+                    </div>
+                </div>
+
+                <div class="col-md-9 col-lg-10"
+                    style="overflow-x: scroll;overflow-y: scroll;overflow: scroll;float: left;height: 100vh;">
+                    <!--右側的dashboard-->
+                    <!--ToolBar-->
+                    <div class="row">
+                        <div id="MainSideBar"
+                            class="nav col-md-9 col-lg-10 bg-light sidebar collapse justify-content-center">
+                            <div id="container-fluid">
+                                <!--檢查清單上方的Toolbar-->
+                                <div class="row" id="DashBoardTopSidebarMenu">
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">X</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">Y</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">Z</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">R</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">S</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">T</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="MainSideBar"
+                            class="nav col-md-9 col-lg-10 bg-light sidebar collapse justify-content-center"
+                            style="bottom:0;">
+                            <div id="container-fluid">
+                                <!--檢查清單下方的Toolbar-->
+                                <div class="row" id="DashBoardBottomSidebarMenu">
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">X</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">Y</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">Z</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">R</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">S</button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-light">T</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--List-->
+                    <div class="row" id="DashBoard">
+                        <!--工作列表屬性-->
+                        <div class="row">
+                            <div class="container-fluid">
+                                <table class="table text-nowrap table-striped text-center">
+                                    <thead class="thead-dark">
+                                        <tr id="StudyListProperty">
+                                            <th scope="col">#</th>
+                                            <th class="bs-checkbox" rowspan="2" data-field="state">
+                                                <label>
+                                                    <input type="checkbox" id="SelectAllStudyCheckBox" onclick="SelectAllStudy('SelectAllStudyCheckBox')" name="btSelectAll">
+                                                </label>
+                                            </th>
+                                            <th scope="col">性名</th>
+                                            <th scope="col">病例號</th>
+                                            <th scope="col">身分證字號</th>
+                                            <th scope="col">檢查</th>
+                                            <th scope="col">時間</th>
+                                            <th scope="col">檢查狀態</th>
+                                            <th scope="col">費用狀態</th>
+                                            <th scope="col">年齡</th>
+                                            <th scope="col">身高</th>
+                                            <th scope="col">體重</th>
+                                            <th scope="col">A</th>
+                                            <th scope="col">B</th>
+                                            <th scope="col">C</th>
+                                            <th scope="col">D</th>
+                                            <th scope="col">E</th>
+                                            <th scope="col">F</th>
+                                            <th scope="col">G</th>
+                                            <th scope="col">H</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="StudyList" data-link="row">
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td class="bs-checkbox">
+                                                <label>
+                                                    <input data-index="0" id="StudyListCheckBox" name="btSelectItem" type="checkbox" value="0">
+                                                </label>
+                                            </td>
+                                            <td>AAAAA</td>
+                                            <td>AAAAA</td>
+                                            <td>AAAAAAAAAAAAAAAAAAAAAAAAAA</td>
+                                            <td>AAAAA</td>
+                                            <td>AAAAA</td>
+                                            <td>AAAAA</td>
+                                            <td>AAAAA</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ErrorMsg" style="display:none">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <h1 id="ErrMsg"></h1>
+            </div>
+            <div class="row justify-content-center">
+                <button type="button" class="btn btn-success" onclick="readed_Error_Message()">確認</button>
+            </div>
+        </div>
+    </div>
+    <!--<div id="drag-source" draggable="true">
+
+        </div>-->
+</body>
+
+</html>
+<script>
+    let CurrentUser;
+    window.ipcRenderer.receive("CurrentUser", (args) => {
+        args = JSON.parse(args);
+        CurrentUser = args.ID;
+        document.getElementById("UserDashBoard").innerHTML += `<span class="navbar-text">${args.ID}</span>`;
+    });
+    function signOut() {
+        window.ipcRenderer.send("userSingOutFromMainWindow", CurrentUser);
+    }
+    function Query() {
+        let QueryString = document.getElementById("QueryString").value;
+
+        document.getElementById("QueryString").value = null;
+        window.ipcRenderer.send("QueryStringCommunicationTest", QueryString);
+    }
+    function SelectAllStudy(id){
+        let e = document.getElementById(id).checked;
+        if(e==true){
+            document.getElementById("StudyListCheckBox").checked=true;
+        }else{
+            document.getElementById("StudyListCheckBox").checked=false;
+        }
+    }
+    function Setting(){
+        window.ipcRenderer.send("Main_setting_window",true);
+    }
+    window.ipcRenderer.receive("ErrorMessage",(args)=>{
+        document.getElementById("normal").style.display="none";
+        document.getElementById("ErrorMsg").style.display="block";
+        document.getElementById("ErrMsg").innerHTML=args;
+    });
+    function readed_Error_Message(){
+        document.getElementById("ErrMsg").innerHTML="";
+        document.getElementById("ErrorMsg").style.display="none";
+        document.getElementById("normal").style.display="block";
+    }
+</script>
