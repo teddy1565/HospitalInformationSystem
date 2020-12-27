@@ -59,6 +59,13 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 
 //================================= Program ==================================
 
+
+//============================= Global Variable =================================
+let CurrentUser;
+
+
+
+
 //============================= Window Block =================================
 
 /**
@@ -307,6 +314,7 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
     if(userLoginResult===true){
         users.push(userWriteIn);
         fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(users));
+        CurrentUser = user;
         indexWindow(user[0]);
         w.close();
     }else{
@@ -327,6 +335,42 @@ ipcMain.on("Main_setting_window",(Event,args)=>{
     let w = BrowserWindow.getFocusedWindow(); 
     mainSettingWindow();
     w.close();
+});
+/**
+ * 
+ * 當使用者要從設定頁面回到主頁面
+ */
+ipcMain.on("fromMainSettingToHomePage",(Event,args)=>{
+    if(args!=true){
+        Event.reply("ErrorMessage","Something Error");
+        return 0;
+    }
+    let w = BrowserWindow.getFocusedWindow();
+    indexWindow(CurrentUser[0]);
+    w.close();
+});
+ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
+    if(args.requestFunc=="RenderExteriorAttributes"){
+        if(args.reqData!==true){
+            console.log("SomeThingError");
+            return 0;
+        }
+        let result=[];
+        let publicWindowConfigAttri = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+        let userPreviteWindowConfigAttri = JSON.parse(fs.readFileSync(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+        userPreviteWindowConfigAttri = userPreviteWindowConfigAttri.RenderExteriorAttributes;
+        result.push(publicWindowConfigAttri);
+        for(let i in userPreviteWindowConfigAttri){
+            for(let j in userPreviteWindowConfigAttri[i]){
+                result.push(userPreviteWindowConfigAttri[i][j]);
+            }
+        }
+        result = {
+            requestFunc:"RenderExteriorAttributes",
+            data:result
+        };
+        Event.reply("MainSettingWindowDashBoardManager",result);
+    }
 });
 /**
  * Global IPC
