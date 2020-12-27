@@ -1,7 +1,11 @@
 {
-    "MainWindow":
-    {
-        "width":"800",
-        "height":"600"
-    }
+    "RenderExteriorAttributes": [
+        {
+            "MainWindow": {
+                "ID":"MainWindow",
+                "width": "800",
+                "height": "600"
+            }
+        }
+    ]
 }

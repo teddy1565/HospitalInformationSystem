@@ -11,13 +11,25 @@
         </header>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-4 col-lg-4">
-                    
+                <div class="col-md-3 col-lg-2 bg-dark" style="overflow-x: scroll;overflow-y: scroll;overflow: scroll;float: left; max-width: 50%;width: 50%;height: 100vh;">
+                    <div class="row justify-content-center">
+                            <div class="btn-group-vertical" role="group" id="mainSettingMenuList">
+                                <!--Menu Items-->
+                                
+                            </div>
+                    </div>
                 </div>
-                <div class="col-md-8 col-lg-8">
+                <div class="col-md-9 col-lg-10" style="overflow-x: scroll;overflow-y: scroll;overflow: scroll;float: left;height: 100vh;">
 
                 </div>
             </div>
         </div>
     </body>
+    <script>
+        window.ipcRenderer.receive("mainSettingMenuListItems",(args)=>{
+            for(let i in args){
+                document.getElementById("mainSettingMenuList").innerHTML+=`${args[i]}<hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color="#6f5499" size="3" />`;
+            }
+        });
+    </script>
 </html>

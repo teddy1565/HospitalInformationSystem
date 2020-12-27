@@ -58,94 +58,19 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 //================================ END ============================================
 
 //================================= Program ==================================
+
 //============================= Window Block =================================
-/**
- * MainMenu template setup
- */
-const MainWindowMenuSetupTemplate = [
-    {
-        "label":"Application",
-        "submenu":[
-            {
-                "label":"CopyRight"
-            },
-            {
-                "label":"Quit",click(){
-                    app.quit();
-                }
-            }
-        ]
-    },
-    {
-        "label":"Study",
-        "submenu":[
-            {
-                "label":"Start Examination",click(){
-                    Examination();
-                }
-            },
-            {
-                "label":"Conversion Tools",
-                "submenu":[
-                    {
-                        "label":"PDFConverterKit",click(){
-                            PDFConverterKit_Window();
-                        }
-                    },
-                    {
-                        "label":"JPEG->DICOM",click(){
-                            JPEGtoDICOM_Transfer_Window();
-                        }
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "label":"NetWork",
-        "submenu":[
-            {
-                "label":"Upload"
-            },
-            {
-                "label":"WorkList",
-                "submenu":[
-                    {'label':"Lost Connection.."},
-                    {'label':"setting",click(){WorkListSettingWindow();}}
-                ]
-            }
-        ]
-    },
-    {
-        "role":"help",
-        "label":"Setting",
-        "submenu":[
-            {
-                "label":"App Config"
-            }
-        ]
-    }
-];
 
 /**
- * check WorkList status (It not good and danger , will fix)
- */
-function MainProgramSetup(){
-    fs.readFile(`${__dirname}/${ConfigPath.SysConfig.dbConnectionConfig}`,(dbconfig)=>{
-        WLLinkTest(dbconfig);
-    })
-}
-/**
  * Main Window (will change variable name)
+ * 主要控制畫面
  * @param {string} CurrentUser -- Pass CurrentUser ID
  * @returns {void}
  */
 function indexWindow(CurrentUser){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
-    WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
-    WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
-    Menu.setApplicationMenu(Menu.buildFromTemplate(MainWindowMenuSetupTemplate));
-    MainProgramSetup();
+    let WindowConfig = RenderExteriorAttributes("MainWindow");
+    WindowConfig.width = WindowConfig.width;
+    WindowConfig.height = WindowConfig.width;
     let mainWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
@@ -165,15 +90,16 @@ function indexWindow(CurrentUser){
 }
 /**
  * Login Window
+ * 登入畫面
  */
-function MainWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
-    WindowConfig.width = parseInt(WindowConfig.MainWindow.width);
-    WindowConfig.height = parseInt(WindowConfig.MainWindow.width);
+function LoginWindow(){
+    let WindowConfig = RenderExteriorAttributes("LoginWindow");
+    WindowConfig.width = WindowConfig.width;
+    WindowConfig.height = WindowConfig.height;
     
     const LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     Menu.setApplicationMenu(null);
-    let mainWindow = new BrowserWindow({
+    let LoginWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
         frame:false,
@@ -183,8 +109,8 @@ function MainWindow(){
             preload:path.join(__dirname, `${RenderScriptPath.login}`)
         }
     });
-    mainWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
-    mainWindow.webContents.on('did-finish-load',()=>{
+    LoginWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
+    LoginWindow.webContents.on('did-finish-load',()=>{
         fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),(err,data)=>{
             let result=[];
             data = JSON.parse(data);
@@ -194,40 +120,58 @@ function MainWindow(){
                 }
             }
             if(result.length<=0&&result.constructor=== Array){
-                mainWindow.webContents.send("localUsersList",null);
+                LoginWindow.webContents.send("localUsersList",null);
             }else if(result.constructor=== Array){
-                mainWindow.webContents.send("localUsersList",JSON.stringify(result));
+                LoginWindow.webContents.send("localUsersList",JSON.stringify(result));
             }else{
                 console.log("ERR");
                 app.quit();
             }
         })
-        mainWindow.webContents.send("loadBG","1");
+        LoginWindow.webContents.send("loadBG","1");
     });
 }
-app.whenReady().then(MainWindow);//application setup
 
-function JPEGtoDICOM_Transfer_Window(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.JTDtranslatorConfig}`))); 
-    let JTDTransferWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true
-        }
-    });
-    JTDTransferWindow.loadFile(path.join(`${__dirname}${RenderPath.ImageConvertor.JpgToDICOM}`));
-}
+app.whenReady().then(LoginWindow);//application setup
+
+
 function PDFConverterKit_Window(){
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
     let PDFConverterKitWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
         webPreferences:{
-            nodeIntegration:true
+            worldSafeExecuteJavaScript:true,
+            contextIsolation:true
         }
     });
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
+}
+
+function mainSettingWindow(){
+    let windowConfig = RenderExteriorAttributes("MainSettingWindow");
+    let n = new BrowserWindow({
+        width:windowConfig.width,
+        height:windowConfig.height,
+        webPreferences:{
+            contextIsolation:true,
+            preload:path.join(__dirname,`${RenderScriptPath.main_setting}`),
+            worldSafeExecuteJavaScript:true
+        }
+    });
+    n.loadFile(path.join(`${__dirname}${RenderPath.main_setting}`));
+    n.webContents.on('did-finish-load',()=>{
+        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.SysConfig.main_setting_menu_button}`),(err,data)=>{
+            if(err){
+                console.log(err);
+                return 0;
+            }
+            data = JSON.parse(data);
+            let Specifylanguage = language(null);
+            data = data[`${Specifylanguage}`];
+            n.webContents.send("mainSettingMenuListItems",data);
+        });
+    });
 }
 
 /**
@@ -235,9 +179,10 @@ function PDFConverterKit_Window(){
  */
 /**
  * Create a new BrowserWindow where study on examination
+ * 執行檢查時 開啟新視窗擷取影像
  */
 function Examination(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let WindowConfig = RenderExteriorAttributes("caputre_test");
     let ExaminationWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
@@ -251,26 +196,51 @@ function Examination(){
     ExaminationWindow.loadFile(path.join(`${__dirname}/src/Browser/capture_test.html`));
 }
 /**
- * Create a new BrowserWindow for setup WorkList Options
- * Change MainMenu label about WorkList sataus
- * This function not good Will fix
+ * get Language Setting
+ * 取得使用者的語言設定
+ * @param {string} options --Specify Language
+ * @returns {string} language
  */
-function WorkListSettingWindow(){
-    let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.UserConfig.WLsettingWindowConfig}`)));
-    WindowConfig.width = parseInt(WindowConfig.width);
-    WindowConfig.height = parseInt(WindowConfig.heigth);
-    let WorkListSettingWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true
-        }
-    });
-    WorkListSettingWindow.loadFile(path.join(`${__dirname}${RenderPath.WorkListSettingWindow}`));
+function language(options){
+    if(options!=null){
+        return options;
+    }
+    /**
+     * 這邊還有語言設定檔判斷沒寫
+     */
+    return "Chinese";
 }
-
+/**
+ * check user
+ * 確認使用者的身分
+ */
 function userLogin(){
     return true;
+}
+/**
+ * check does user has private attributes
+ * 在創建視窗前確認使用者是否有自行設定的視窗大小屬性
+ * @param {string} windowID 
+ * @returns {object}
+ */
+function RenderExteriorAttributes(windowID){
+    let data = JSON.parse(fs.readFileSync(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+    data = data.RenderExteriorAttributes;
+    for(let i in data){
+        if(data[i].ID==windowID){
+            let result={
+                width:parseInt(`${data[i].width}`),
+                height:parseInt(`${data[i].height}`)
+            };
+            return result;
+        }
+    }
+    data = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
+    let result = {
+        width:parseInt(`${data.width}`),
+        height:parseInt(`${data.height}`)
+    }
+    return result;
 }
 /**
  * =========================================================
@@ -280,33 +250,7 @@ function userLogin(){
  * Example: upload/download/GET/POST.....blablabla
  */
 
-/**
- * WorkList connection and config load test
- * If linked , it will change Menu to show link status
- * @param {JSON} dbConfig 
- * @returns {void}
- */
-function WLLinkTest(dbConfig){
-    if(!dbConfig)return 0;
-    let a = MainWindowMenuSetupTemplate;
-    for(let i in a){
-        if(a[i].label=='NetWork'){
-            for(let j in a[i].submenu){
-                if(a[i].submenu[j].label=='WorkList'){
-                    for(let k=0;k<a[i].submenu[j].submenu.length;k++){
-                        if(a[i].submenu[j].submenu[k].label=="Lost Connection.."){
-                            a[i].submenu[j].submenu[k].label="connected";
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-            break;
-        }
-    }
-    Menu.setApplicationMenu(Menu.buildFromTemplate(a));
-}
+
 /**
  * =========================================================
  */
@@ -328,14 +272,8 @@ ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
     }
     fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(LocalUsersUpdate));
     let w = BrowserWindow.getFocusedWindow();
-    MainWindow();
+    LoginWindow();
     w.close();
-});
-/**
- * QueryStringCommunicationTest
- */
-ipcMain.on("QueryStringCommunicationTest",(Event,args)=>{
-    console.log(args);
 });
 /**
  * Login Window IPC
@@ -372,25 +310,22 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
         indexWindow(user[0]);
         w.close();
     }else{
-        
+        /**
+         * 待補充
+         */
     }
 });
+/**
+ * Application Setting Window , Manager App [Config/Mapping Rule/SideBar function]
+ * 應用程式的設定視窗 管理程式的設定檔/主機資料映射規則/sideBar的功能鍵
+ */
 ipcMain.on("Main_setting_window",(Event,args)=>{
     if(args!=true){
         Event.reply("ErrorMessage","has some problem in index.js/ipcMain [Main_setting_window]");
         return 0;
     }
     let w = BrowserWindow.getFocusedWindow(); 
-    let windowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-    let n = new BrowserWindow({
-        width:windowConfig.width,
-        height:windowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            preload:path.join(__dirname,`${RenderScriptPath.main_setting}`)
-        }
-    });
-    n.loadFile(path.join(`${__dirname}${RenderPath.main_setting}`));
+    mainSettingWindow();
     w.close();
 });
 /**
