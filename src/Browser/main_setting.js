@@ -111,6 +111,21 @@ window.ipcRenderer.receive("MainSettingWindowDashBoardManager",(args)=>{
             }
         </script>
         `;
+    }else if(args.requestFunc=="deleteExteriorAttributes"){
+        if(args.data!=true){
+                document.getElementById("Message").innerHTML=`
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>刪除進程出現錯誤!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+        }
+        RenderExteriorAttributes();
     }
 });
 function modifyExteriorAttributes(id){
@@ -144,7 +159,26 @@ function modifyExteriorAttributes(id){
 }
 
 function deleteExteriorAttributes(id){
+    if(document.getElementById(`ID_${id}`).innerHTML=="PublicConfig"){
+        document.getElementById("Message").innerHTML=`
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+            <strong>此屬性不可刪除!</strong>
+        </div>
+        <script>
+            function TempMessage(){
+                document.getElementById("Message").innerHTML="";
+            }
+        </script>
+        `;
+        return 0;
+    }
 
+    let request={
+        requestFunc:"deleteExteriorAttributes",
+        ID:`${document.getElementById(`ID_${id}`).innerHTML}`
+    }
+    window.ipcRenderer.send("MainSettingWindowRequest",request);
 }
 function saveExteriorAttributes(id){
     let oldWindowID = document.getElementById("OLDwindowID").value;

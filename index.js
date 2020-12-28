@@ -440,6 +440,34 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
                 });
             });
         }
+    }else if(args.requestFunc=="deleteExteriorAttributes"){
+        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
+            if(err){
+                console.log(err);
+                return 0;
+            }
+            dataSet = JSON.parse(data);
+            data = dataSet.RenderExteriorAttributes;
+            let update = [];
+            for(let i in data){
+                for(let j in data[i]){
+                    if(`${data[i][j].ID}`==`${args.ID}`)continue;
+                    update.push(data[i]);
+                }
+            }
+            dataSet.RenderExteriorAttributes = update;
+            fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(dataSet),(err)=>{
+                if(err){
+                    console.log(err);
+                    return 0;
+                }
+                let result={
+                    requestFunc:"deleteExteriorAttributes",
+                    data:true
+                }
+                Event.reply("MainSettingWindowDashBoardManager",result);
+            });
+        });
     }
 });
 /**
