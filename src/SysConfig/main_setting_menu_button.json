@@ -2,7 +2,6 @@
     "English": [
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"RenderExteriorAttributes()\">RenderExteriorAttributes</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"RenderIPCWhiteList()\">RenderIPCWhiteList</button>",
-        "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"RenderPreloadScript()\">RenderPreloadScript</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"LocalHostDataBaseRole()\">LocalHostDataBaseRole</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"RemoteHostDataBaseRole()\">RemoteHostDataBaseRole</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn btn-light\" onclick=\"CustomMenu()\">CustomMenu</button>"
@@ -10,7 +9,6 @@
     "Chinese":[
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"RenderExteriorAttributes()\">渲染器外觀屬性</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"RenderIPCWhiteList()\">渲染器IPC白名單</button>",
-        "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"RenderPreloadScript()\">渲染器PreloadScript</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"LocalHostDataBaseRole()\">本地資料庫連接映射規則</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"RemoteHostDataBaseRole()\">遠端資料庫連接映射規則</button>",
         "<button type=\"button\" id=\"SideBarMenuButtonContext\" class=\"btn\" onclick=\"CustomMenu()\">客制菜單功能</button>"

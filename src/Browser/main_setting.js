@@ -298,9 +298,7 @@ function addNewRECSave(){
 
 function RenderIPCWhiteList(){
 }
-function RenderPreloadScript(){
 
-}
 function LocalHostDataBaseRole(){
 
 }
