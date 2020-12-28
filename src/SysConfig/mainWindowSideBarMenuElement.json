@@ -1,0 +1,45 @@
+{
+    "catchStatistics":"數據統計",
+    "firstCatchStatisticsText":"今日尚未檢查:",
+    "firstCatchStatisticsValue":"0",
+    "SecCatchStatisticsText":"今日完成檢查:",
+    "SecCatchStatisticsValue":"0",
+    "LeftAndTopSideBarMenu":[
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目1</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目2</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目3</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目4</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目5</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">功能項目6</button>"
+    ],
+    "LeftAndBottomSideBarMenu":[
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目1</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目2</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目3</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目4</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目5</button>",
+        "<button class=\"btn btn-light\" type=\"button\" onclick=\"\">檢查項目6</button>"
+    ],
+    "LeftAndBottomSideBarSubFuncMenu":[
+        "<button class=\"btn btn-light\" onclick=\"\">A</button>",
+        "<button class=\"btn btn-light\" onclick=\"\">B</button>",
+        "<button class=\"btn btn-light\" onclick=\"\">C</button>",
+        "<button class=\"btn btn-light\" onclick=\"\">D</button>"
+    ],
+    "DashBoardTopSidebarMenu":[
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具1</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具2</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具3</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具4</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具5</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">輔助工具6</button>"
+    ],
+    "DashBoardBottomSidebarMenu":[
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途1</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途2</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途3</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途4</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途5</button>",
+        "<button type=\"button\" class=\"btn btn-light\" onclick=\"\">擴充用途6</button>"
+    ]
+}

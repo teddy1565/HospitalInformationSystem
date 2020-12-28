@@ -22,6 +22,7 @@ const path = require('path');
  * Dicom Modules
  */
 const dicomParse = require('dicom-parser');
+const { platform } = require('os');
 /**
  * ConfigPath
  */
@@ -92,6 +93,27 @@ function indexWindow(CurrentUser){
         const CurrentUserResult = {
             ID:CurrentUser
         };
+        fs.readFile(path.join(__dirname,`${ConfigPath.SysConfig.mainWindowSideBarMenuElement}`),(err,data)=>{
+            if(err){
+                console.log(err);
+                return 0;
+            }
+            data = JSON.parse(data);
+            let result = {
+                LAT:data.LeftAndTopSideBarMenu,
+                LAB:data.LeftAndBottomSideBarMenu,
+                LABS:data.LeftAndBottomSideBarSubFuncMenu,
+                DTS:data.DashBoardTopSidebarMenu,
+                DBS:data.DashBoardBottomSidebarMenu,
+                catchStatisticsContext:data.catchStatistics,
+                firstCatchStatisticsTextContext:data.firstCatchStatisticsText,
+                firstCatchStatisticsValueContext:data.firstCatchStatisticsValue,
+                SecCatchStatisticsTextContext:data.SecCatchStatisticsText,
+                SecCatchStatisticsValueContext:data.SecCatchStatisticsValue
+            }
+            mainWindow.webContents.send("mainWindowSideBarMenuElementSetup",result);
+        });
+        
         mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
     });
 }
@@ -500,6 +522,7 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
         });
     }
 });
+
 /**
  * Global IPC
  */

@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld(
             }
         },
         receive: (channel, func) => {
-            let validChannels = ["CurrentUser","ErrorMessage"];
+            let validChannels = ["CurrentUser","ErrorMessage","mainWindowSideBarMenuElementSetup"];
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 
                 ipcRenderer.on(channel, (event, ...args) => func(...args));

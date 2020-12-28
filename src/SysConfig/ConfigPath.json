@@ -9,6 +9,7 @@
         "LoginUsers":"./src/SysConfig/LoginUsers.json",
         "LoginWindowConfig":"./src/SysConfig/LoginWindowConfig.json",
         "WindowRenderPath":"./src/SysConfig/WindowRenderPath.json",
-        "main_setting_menu_button":"./src/SysConfig/main_setting_menu_button.json"
+        "main_setting_menu_button":"./src/SysConfig/main_setting_menu_button.json",
+        "mainWindowSideBarMenuElement":"./src/SysConfig/mainWindowSideBarMenuElement.json"
     }
 }
