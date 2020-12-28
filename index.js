@@ -349,6 +349,10 @@ ipcMain.on("fromMainSettingToHomePage",(Event,args)=>{
     indexWindow(CurrentUser[0]);
     w.close();
 });
+/**
+ * MainSettingWindowRequest Process
+ * 主要處理從MainSettingWindow發出的處理請求
+ */
 ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
     if(args.requestFunc=="RenderExteriorAttributes"){
         if(args.reqData!==true){
@@ -370,6 +374,72 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
             data:result
         };
         Event.reply("MainSettingWindowDashBoardManager",result);
+    }else if(args.requestFunc=="saveExteriorAttributes"){
+        if(args.reqData.oldWindowID=="PublicConfig"){
+            let writeIn = {
+                width:args.reqData.width,
+                height:args.reqData.height
+            }
+            fs.writeFile(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`),JSON.stringify(writeIn),(err)=>{
+                let result = {
+                    requestFunc:"saveExteriorAttributes",
+                    data:false
+                };
+                if(err){
+                    console.log(err);
+                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    return 0;
+                }
+                result.data = {
+                    UID:args.reqData.ID,
+                    ID:args.reqData.newWindowID,
+                    width:args.reqData.width,
+                    height:args.reqData.height
+                };
+                Event.reply("MainSettingWindowDashBoardManager",result);
+            });
+        }else{
+            fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
+                if(err){
+                    console.log(err);
+                    let result={
+                        requestFunc:"saveExteriorAttributes",
+                        data:false
+                    };
+                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    return 0;
+                }
+                let OverWriteFile = JSON.parse(data);
+                let target = OverWriteFile.RenderExteriorAttributes;
+                for(let i in target){
+                    if(`${target[i].ID}`== `${args.reqData.oldWindowID}`){
+                        target.ID = args.reqData.newWindowID;
+                        target.width = args.reqData.width;
+                        target.height = args.reqData.height;
+                    }
+                }
+                OverWriteFile.RenderExteriorAttributes = target;
+                fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(OverWriteFile),(err)=>{
+                    let result = {
+                        requestFunc:"saveExteriorAttributes",
+                        data:false
+                    };
+                    if(err){
+                        console.log(err);
+                        Event.reply("MainSettingWindowDashBoardManager",result);
+                        return 0;
+                    }
+                    
+                    result.data = {
+                        UID:args.reqData.ID,
+                        ID:args.reqData.newWindowID,
+                        width:args.reqData.width,
+                        height:args.reqData.height
+                    };
+                    Event.reply("MainSettingWindowDashBoardManager",result);
+                });
+            });
+        }
     }
 });
 /**
