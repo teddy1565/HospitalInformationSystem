@@ -409,14 +409,17 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
                 }
                 let OverWriteFile = JSON.parse(data);
                 let target = OverWriteFile.RenderExteriorAttributes;
+                let OverWriteContent=[];
                 for(let i in target){
+                    let r = target[i];
                     if(`${target[i].ID}`== `${args.reqData.oldWindowID}`){
-                        target.ID = args.reqData.newWindowID;
-                        target.width = args.reqData.width;
-                        target.height = args.reqData.height;
+                        r.ID = args.reqData.newWindowID;
+                        r.width = args.reqData.width;
+                        r.height = args.reqData.height;
                     }
+                    OverWriteContent.push(r);
                 }
-                OverWriteFile.RenderExteriorAttributes = target;
+                OverWriteFile.RenderExteriorAttributes = OverWriteContent;
                 fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(OverWriteFile),(err)=>{
                     let result = {
                         requestFunc:"saveExteriorAttributes",
