@@ -295,7 +295,10 @@ function addNewRECSave(){
     window.ipcRenderer.send("MainSettingWindowRequest",request);
 }
 //================================================================================
-
+/**
+ * 渲染器IPC通訊白名單列表
+ * 基於安全性因素只有在白名單上的channel才能夠通訊
+ */
 function RenderIPCWhiteList(){
 }
 

@@ -314,4 +314,31 @@
         document.getElementById("ErrorMsg").style.display="none";
         document.getElementById("normal").style.display="block";
     }
+    window.ipcRenderer.receive("mainWindowSideBarMenuElementSetup",(args)=>{
+        let LeftAndTopSideBarMenu = document.getElementById("LeftAndTopSideBarMenu");
+        let LeftAndBottomSideBarMenu = document.getElementById("LeftAndBottomSideBarMenu");
+        let LeftAndBottomSideBarSubFuncMenu = document.getElementById("LeftAndBottomSideBarSubFuncMenu");
+        let DashBoardTopSidebarMenu = document.getElementById("DashBoardTopSidebarMenu");
+        let DashBoardBottomSidebarMenu = document.getElementById("DashBoardBottomSidebarMenu");
+        for(let i in args.LAT){
+            LeftAndTopSideBarMenu.innerHTML+=`${args.LAT[i]}`;
+        }
+        for(let i in args.LAB){
+            LeftAndBottomSideBarMenu.innerHTML+=`${args.LAB[i]}`;
+        }
+        for(let i in args.LABS){
+            LeftAndBottomSideBarSubFuncMenu.innerHTML+=`<div class="col col-md-3">${args.LABS[i]}</div>`;
+        }
+        for(let i in args.DTS){
+            DashBoardTopSidebarMenu.innerHTML+=`<div class="col">${args.DTS[i]}</div>`;
+        }
+        for(let i in args.DBS){
+            DashBoardTopSidebarMenu.innerHTML+=`<div class="col">${args.DBS[i]}</div>`;
+        }
+        document.getElementById("catchStatistics").innerHTML = args.catchStatisticsContext;
+        document.getElementById("SecCatchStatisticsValue").innerHTML = args.SecCatchStatisticsValueContext;
+        document.getElementById("SecCatchStatisticsText").innerHTML = args.SecCatchStatisticsTextContext;
+        document.getElementById("firstCatchStatisticsValue").innerHTML = args.firstCatchStatisticsValueContext;
+        document.getElementById("firstCatchStatisticsText").innerHTML = args.firstCatchStatisticsTextContext;
+    });
 </script>
