@@ -57,14 +57,14 @@ window.ipcRenderer.receive("MainSettingWindowDashBoardManager",(args)=>{
         document.getElementById("WindowList").innerHTML+=`
         <tr>
             <th scope="row"></th>
-            <td class="btn">
+            <td class="btn" id="addNewREA">
                 <label>
-                    <button type="button" class="btn btn-warning">新增視窗外觀屬性</button>
+                    <button type="button" class="btn btn-warning" onclick="addNewRenderExteriorAttributes()">新增視窗外觀屬性</button>
                 </label>
             </td>
-            <td>===</td>
-            <td>===</td>
-            <td>===</td>
+            <td id="addNewREAID">===</td>
+            <td id="addNewREAwidth">===</td>
+            <td id="addNweREAheight">===</td>
         </tr>
         `;
     }else if(args.requestFunc=="saveExteriorAttributes"){
@@ -117,6 +117,33 @@ window.ipcRenderer.receive("MainSettingWindowDashBoardManager",(args)=>{
             <div class="alert alert-danger alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
                 <strong>刪除進程出現錯誤!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+        }
+        RenderExteriorAttributes();
+    }else if(args.requestFunc=="ErrorMessage"){
+        document.getElementById("Message").innerHTML=`
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+            <strong>${args.Context}!</strong>出現錯誤請重新確認!
+        </div>
+        <script>
+            function TempMessage(){
+                document.getElementById("Message").innerHTML="";
+            }
+        </script>
+        `;
+    }else if(args.requestFunc=="addNewRenderExteriorAttributes"){
+        if(args.result!=true){
+            document.getElementById("Message").innerHTML=`
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>傳輸過程出現錯誤!</strong>請重新確認!
             </div>
             <script>
                 function TempMessage(){
@@ -229,10 +256,46 @@ function InputValid(id){
         </label>
     `;
 }
-//================================================================================
-function SelectAllCheckBox(btnID){
-
+function addNewRenderExteriorAttributes(){
+    let id = document.getElementById("addNewREAID");
+    let width = document.getElementById("addNewREAwidth");
+    let height = document.getElementById("addNweREAheight");
+    id.className="text";
+    id.innerHTML=`
+    <label>
+        <input type="text" class="text" id="NewREAID" placeholder="ID">
+    </label>
+    `;
+    width.className="text";
+    width.innerHTML=`
+    <label>
+        <input type="text" class="text" id="NewREAwidth" placeholder="width">
+    </label>
+    `;
+    height.className="text";
+    height.innerHTML=`
+    <label>
+        <input type="text" class="text" id="NewREAwidth" placeholder="height">
+    </label>
+    `;
+    document.getElementById("addNewREA").innerHTML=`
+        <label>
+            <button type="button" class="btn btn-success" onclick="addNewRECSave()">儲存</button>
+            <button type="button" class="btn btn-danger" onclick="RenderExteriorAttributes()">取消</button>
+        </label>
+    `;
 }
+function addNewRECSave(){
+    let request={
+        requestFunc:"addNewRenderExteriorAttributes",
+        ID:`${document.getElementById("NewREAID").value}`,
+        width:`${document.getElementById("NewREAwidth").value}`,
+        height:`${document.getElementById("NewREAwidth").value}`
+    };
+    window.ipcRenderer.send("MainSettingWindowRequest",request);
+}
+//================================================================================
+
 function RenderIPCWhiteList(){
 }
 function RenderPreloadScript(){

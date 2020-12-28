@@ -77,7 +77,7 @@ let CurrentUser;
 function indexWindow(CurrentUser){
     let WindowConfig = RenderExteriorAttributes("MainWindow");
     WindowConfig.width = WindowConfig.width;
-    WindowConfig.height = WindowConfig.width;
+    WindowConfig.height = WindowConfig.height;
     let mainWindow = new BrowserWindow({
         width:WindowConfig.width,
         height:WindowConfig.height,
@@ -365,9 +365,7 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
         userPreviteWindowConfigAttri = userPreviteWindowConfigAttri.RenderExteriorAttributes;
         result.push(publicWindowConfigAttri);
         for(let i in userPreviteWindowConfigAttri){
-            for(let j in userPreviteWindowConfigAttri[i]){
-                result.push(userPreviteWindowConfigAttri[i][j]);
-            }
+                result.push(userPreviteWindowConfigAttri[i]);
         }
         result = {
             requestFunc:"RenderExteriorAttributes",
@@ -450,10 +448,9 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
             data = dataSet.RenderExteriorAttributes;
             let update = [];
             for(let i in data){
-                for(let j in data[i]){
-                    if(`${data[i][j].ID}`==`${args.ID}`)continue;
+                    if(`${data[i].ID}`==`${args.ID}`)continue;
                     update.push(data[i]);
-                }
+                
             }
             dataSet.RenderExteriorAttributes = update;
             fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(dataSet),(err)=>{
@@ -464,6 +461,36 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
                 let result={
                     requestFunc:"deleteExteriorAttributes",
                     data:true
+                }
+                Event.reply("MainSettingWindowDashBoardManager",result);
+            });
+        });
+    }else if(args.requestFunc=="addNewRenderExteriorAttributes"){
+        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
+            if(err){
+                console.log(err);
+                return 0;
+            }
+            dataSet = JSON.parse(data);
+            let addItem = {
+                ID:`${args.ID}`,
+                width:`${args.width}`,
+                height:`${args.height}`
+            }
+            dataSet.RenderExteriorAttributes.push(addItem);
+            fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(dataSet),(err)=>{
+                if(err){
+                    console.log(err);
+                    let result={
+                        requestFunc:"ErrorMessage",
+                        Context:`${err}`
+                    }
+                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    return 0;
+                }
+                let result={
+                    requestFunc:"addNewRenderExteriorAttributes",
+                    result:true
                 }
                 Event.reply("MainSettingWindowDashBoardManager",result);
             });
