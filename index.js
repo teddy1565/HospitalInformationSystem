@@ -206,6 +206,7 @@ function mainSettingWindow(){
 /**
  * ==================== Function Block =====================
  */
+//.
 /**
  * Create a new BrowserWindow where study on examination
  * 執行檢查時 開啟新視窗擷取影像
