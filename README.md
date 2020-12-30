@@ -6,6 +6,9 @@
     electron .
  ```
 無須密碼直接按登入即可
+
 Query病歷號資料為12345678
+
 檢查單號為1091230X987654 或 1021130R978642
+
 這幾筆資料都放在./src/SysConfig/VirtualWorkList.json
