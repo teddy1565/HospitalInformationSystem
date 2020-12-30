@@ -5,7 +5,7 @@
 /**
  * electron main module
  */
-const { app , BrowserWindow ,Menu,MenuItem, ipcMain,remote, ipcRenderer,dialog, shell} = require('electron');
+const { app, BrowserWindow, Menu, MenuItem, ipcMain, remote, ipcRenderer, dialog, shell } = require('electron');
 
 /**
  * File system
@@ -17,7 +17,7 @@ const fs = require('fs');
  * 
  * it cant take file path
  */
-const path = require('path'); 
+const path = require('path');
 /**
  * Dicom Modules
  */
@@ -28,7 +28,7 @@ const { platform } = require('os');
  */
 const ConfigPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/src/SysConfig/ConfigPath.json`)));
 const RenderPath = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.WindowRenderPath}`)));
-const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/BrowserPreloadScript/RenderScriptPath.json")));
+const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname, "src/BrowserPreloadScript/RenderScriptPath.json")));
 
 //============================= END =============================
 
@@ -40,18 +40,40 @@ const RenderScriptPath = JSON.parse(fs.readFileSync(path.join(__dirname,"src/Bro
 
 /**
  *  ===========================Notes=============================
- *      1.contextIsolation:true 會導致 preload 及 NodeIntegration失效
- *      2.不使用nodeIntegration下 需同時開啟contextIsolation和worldSafeExecuteJavaScript
- *        才能夠注入preload script
- *      3.cornerstone模組只能在前端使用,且若出現Cannot read property 'webpackHotUpdate_name_' of undefined等問題
- *        需要到source部分 將this["webpackHotUpdate_name_"]改為window["webpackHotUpdate_name_"]
- *        解決辦法參考:https://github.com/cornerstonejs/cornerstoneWADOImageLoader/issues/350
+ *      
+ *      1.cornerstone模組只能在前端使用,且若出現Cannot read property 'webpackHotUpdate_name_' of undefined等問題
+ *        需要到source 將this["webpackHotUpdate_name_"]改為window["webpackHotUpdate_name_"]
+ *        由於this指向window但在strict下會失效
+ *      2.因electron v12後要求 基於資安因素 contextIsolation 預設為 true
+ *        若要使用ipc則需要開啟 worldSafeExecuteJavaScript:true
+ * 
+ *        在preload採用這種方式可以有效控管特定的channel
+ *        const {contextBridge,ipcRenderer} = require('electron');
+ *        
+ *        contextBridge.exposeInMainWorld(
+ *            // whitelist channels
+ *        "ipcRenderer", {
+ *                send: (channel, data) => {
+ *                   let validChannels = [];
+ *                    if (validChannels.includes(channel)) {
+ *                        ipcRenderer.send(channel, data);
+ *                    }
+ *                },
+ *                receive: (channel, func) => {
+ *                   let validChannels = [];
+ *                   if (validChannels.includes(channel)) {
+ *                        // Deliberately strip event as it includes `sender` 
+ *                        ipcRenderer.on(channel, (event, ...args) => func(...args));
+ *                    }
+ *                }
+ *            }
+ *        );
  */
 /**
  * ===========================To Do List=============================
  * research:
- *          1. /src/Method/PDFConvert.js -- promise & sync  problem
- *          2. platform(windows) node_modules(canvas) when it BuildPackage has problem 
+ *          1. /src/Method/PDFConvert.js -- promise & sync 
+ *          2. platform(windows) node_modules(canvas) when it BuildPackage has 
  *              --> https://skychang.github.io/2020/03/10/npm-Fix%20node-gyp%20and%20canvas%20dependence/
  *          3. BootStrap 切版 
  */
@@ -75,137 +97,137 @@ let CurrentUser;
  * @param {string} CurrentUser -- Pass CurrentUser ID
  * @returns {void}
  */
-function indexWindow(CurrentUser){
+function indexWindow(CurrentUser) {
     let WindowConfig = RenderExteriorAttributes("MainWindow");
     WindowConfig.width = WindowConfig.width;
     WindowConfig.height = WindowConfig.height;
     let mainWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.main}`)
+        width: WindowConfig.width,
+        height: WindowConfig.height,
+        webPreferences: {
+            contextIsolation: true,
+            worldSafeExecuteJavaScript: true,
+            preload: path.join(__dirname, `${RenderScriptPath.main}`)
         }
     });
     mainWindow.loadFile(path.join(`${__dirname}${RenderPath.main}`));
-    mainWindow.webContents.on('did-finish-load',()=>{
+    mainWindow.webContents.on('did-finish-load', () => {
         const CurrentUserResult = {
-            ID:CurrentUser
+            ID: CurrentUser
         };
-        fs.readFile(path.join(__dirname,`${ConfigPath.SysConfig.mainWindowSideBarMenuElement}`),(err,data)=>{
-            if(err){
+        fs.readFile(path.join(__dirname, `${ConfigPath.SysConfig.mainWindowSideBarMenuElement}`), (err, data) => {
+            if (err) {
                 console.log(err);
                 return 0;
             }
             data = JSON.parse(data);
             let result = {
-                LAT:data.LeftAndTopSideBarMenu,
-                LAB:data.LeftAndBottomSideBarMenu,
-                LABS:data.LeftAndBottomSideBarSubFuncMenu,
-                DTS:data.DashBoardTopSidebarMenu,
-                DBS:data.DashBoardBottomSidebarMenu,
-                catchStatisticsContext:data.catchStatistics,
-                firstCatchStatisticsTextContext:data.firstCatchStatisticsText,
-                firstCatchStatisticsValueContext:data.firstCatchStatisticsValue,
-                SecCatchStatisticsTextContext:data.SecCatchStatisticsText,
-                SecCatchStatisticsValueContext:data.SecCatchStatisticsValue
+                LAT: data.LeftAndTopSideBarMenu,
+                LAB: data.LeftAndBottomSideBarMenu,
+                LABS: data.LeftAndBottomSideBarSubFuncMenu,
+                DTS: data.DashBoardTopSidebarMenu,
+                DBS: data.DashBoardBottomSidebarMenu,
+                catchStatisticsContext: data.catchStatistics,
+                firstCatchStatisticsTextContext: data.firstCatchStatisticsText,
+                firstCatchStatisticsValueContext: data.firstCatchStatisticsValue,
+                SecCatchStatisticsTextContext: data.SecCatchStatisticsText,
+                SecCatchStatisticsValueContext: data.SecCatchStatisticsValue
             }
-            mainWindow.webContents.send("mainWindowSideBarMenuElementSetup",result);
+            mainWindow.webContents.send("mainWindowSideBarMenuElementSetup", result);
         });
-        fs.readFile(path.join(__dirname,`${ConfigPath.UserConfig.mainWorkListTopic}`),(err,data)=>{
-            if(err){
+        fs.readFile(path.join(__dirname, `${ConfigPath.UserConfig.mainWorkListTopic}`), (err, data) => {
+            if (err) {
                 console.log(err);
                 return 0;
             }
             data = JSON.parse(data);
-            mainWindow.webContents.send("MainWindowWorkListItems",data);
+            mainWindow.webContents.send("MainWindowWorkListItems", data);
         });
-        mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
+        mainWindow.webContents.send("CurrentUser", JSON.stringify(CurrentUserResult));
     });
 }
 /**
  * Login Window
  * 登入畫面
  */
-function LoginWindow(){
+function LoginWindow() {
     let WindowConfig = RenderExteriorAttributes("LoginWindow");
     WindowConfig.width = WindowConfig.width;
     WindowConfig.height = WindowConfig.height;
-    
+
     const LoginUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     Menu.setApplicationMenu(null);
     let LoginWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        frame:false,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname, `${RenderScriptPath.login}`)
+        width: WindowConfig.width,
+        height: WindowConfig.height,
+        frame: false,
+        webPreferences: {
+            contextIsolation: true,
+            worldSafeExecuteJavaScript: true,
+            preload: path.join(__dirname, `${RenderScriptPath.login}`)
         }
     });
     LoginWindow.loadFile(path.join(`${__dirname}${RenderPath.login}`));
-    LoginWindow.webContents.on('did-finish-load',()=>{
-        fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),(err,data)=>{
-            let result=[];
+    LoginWindow.webContents.on('did-finish-load', () => {
+        fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`), (err, data) => {
+            let result = [];
             data = JSON.parse(data);
-            if(data.length>0){
-                for(let i in data){
+            if (data.length > 0) {
+                for (let i in data) {
                     result.push(data[i].ID);
                 }
             }
-            if(result.length<=0&&result.constructor=== Array){
-                LoginWindow.webContents.send("localUsersList",null);
-            }else if(result.constructor=== Array){
-                LoginWindow.webContents.send("localUsersList",JSON.stringify(result));
-            }else{
+            if (result.length <= 0 && result.constructor === Array) {
+                LoginWindow.webContents.send("localUsersList", null);
+            } else if (result.constructor === Array) {
+                LoginWindow.webContents.send("localUsersList", JSON.stringify(result));
+            } else {
                 console.log("ERR");
                 app.quit();
             }
         })
-        LoginWindow.webContents.send("loadBG","1");
+        LoginWindow.webContents.send("loadBG", "1");
     });
 }
 
 app.whenReady().then(LoginWindow);//application setup
 
 
-function PDFConverterKit_Window(){
+function PDFConverterKit_Window() {
     let WindowConfig = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
     let PDFConverterKitWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            worldSafeExecuteJavaScript:true,
-            contextIsolation:true
+        width: WindowConfig.width,
+        height: WindowConfig.height,
+        webPreferences: {
+            worldSafeExecuteJavaScript: true,
+            contextIsolation: true
         }
     });
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
 }
 
-function mainSettingWindow(){
+function mainSettingWindow() {
     let windowConfig = RenderExteriorAttributes("MainSettingWindow");
     let n = new BrowserWindow({
-        width:windowConfig.width,
-        height:windowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            preload:path.join(__dirname,`${RenderScriptPath.main_setting}`),
-            worldSafeExecuteJavaScript:true
+        width: windowConfig.width,
+        height: windowConfig.height,
+        webPreferences: {
+            contextIsolation: true,
+            preload: path.join(__dirname, `${RenderScriptPath.main_setting}`),
+            worldSafeExecuteJavaScript: true
         }
     });
     n.loadFile(path.join(`${__dirname}${RenderPath.main_setting}`));
-    n.webContents.on('did-finish-load',()=>{
-        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.SysConfig.main_setting_menu_button}`),(err,data)=>{
-            if(err){
+    n.webContents.on('did-finish-load', () => {
+        fs.readFile(path.join(`${__dirname}`, `${ConfigPath.SysConfig.main_setting_menu_button}`), (err, data) => {
+            if (err) {
                 console.log(err);
                 return 0;
             }
             data = JSON.parse(data);
             let Specifylanguage = language(null);
             data = data[`${Specifylanguage}`];
-            n.webContents.send("mainSettingMenuListItems",data);
+            n.webContents.send("mainSettingMenuListItems", data);
         });
     });
 }
@@ -218,15 +240,15 @@ function mainSettingWindow(){
  * Create a new BrowserWindow where study on examination
  * 執行檢查時 開啟新視窗擷取影像
  */
-function Examination(){
+function Examination() {
     let WindowConfig = RenderExteriorAttributes("caputre_test");
     let ExaminationWindow = new BrowserWindow({
-        width:WindowConfig.width,
-        height:WindowConfig.height,
-        webPreferences:{
-            contextIsolation:true,
-            worldSafeExecuteJavaScript:true,
-            preload:path.join(__dirname,`${RenderScriptPath.capture_test}`)
+        width: WindowConfig.width,
+        height: WindowConfig.height,
+        webPreferences: {
+            contextIsolation: true,
+            worldSafeExecuteJavaScript: true,
+            preload: path.join(__dirname, `${RenderScriptPath.capture_test}`)
         }
     });
     //ExaminationWindow.webContents.openDevTools();
@@ -238,8 +260,8 @@ function Examination(){
  * @param {string} options --Specify Language
  * @returns {string} language
  */
-function language(options){
-    if(options!=null){
+function language(options) {
+    if (options != null) {
         return options;
     }
     /**
@@ -251,7 +273,7 @@ function language(options){
  * check user
  * 確認使用者的身分
  */
-function userLogin(){
+function userLogin() {
     return true;
 }
 /**
@@ -260,22 +282,22 @@ function userLogin(){
  * @param {string} windowID 
  * @returns {object}
  */
-function RenderExteriorAttributes(windowID){
-    let data = JSON.parse(fs.readFileSync(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+function RenderExteriorAttributes(windowID) {
+    let data = JSON.parse(fs.readFileSync(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
     data = data.RenderExteriorAttributes;
-    for(let i in data){
-        if(data[i].ID==windowID){
-            let result={
-                width:parseInt(`${data[i].width}`),
-                height:parseInt(`${data[i].height}`)
+    for (let i in data) {
+        if (data[i].ID == windowID) {
+            let result = {
+                width: parseInt(`${data[i].width}`),
+                height: parseInt(`${data[i].height}`)
             };
             return result;
         }
     }
     data = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
     let result = {
-        width:parseInt(`${data.width}`),
-        height:parseInt(`${data.height}`)
+        width: parseInt(`${data.width}`),
+        height: parseInt(`${data.height}`)
     }
     return result;
 }
@@ -300,14 +322,14 @@ function RenderExteriorAttributes(windowID){
 /**
  * MainWinodw user SingOut --test
  */
-ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
+ipcMain.on("userSingOutFromMainWindow", (Event, args) => {
     let LocalUsers = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let LocalUsersUpdate = [];
-    for(let i in LocalUsers){
-        if(LocalUsers[i].ID == args)continue;
+    for (let i in LocalUsers) {
+        if (LocalUsers[i].ID == args) continue;
         LocalUsersUpdate.push(LocalUsers[i]);
     }
-    fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(LocalUsersUpdate));
+    fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`), JSON.stringify(LocalUsersUpdate));
     let w = BrowserWindow.getFocusedWindow();
     LoginWindow();
     w.close();
@@ -318,13 +340,13 @@ ipcMain.on("userSingOutFromMainWindow",(Event,args)=>{
 /**
  * GetLoginWindow Background config --test
  */
-ipcMain.on("GetBGconfig",(Event,args)=>{
-    fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginWindowConfig}`),(err,data)=>{
-        if(err)console.log(err);
-        else{
+ipcMain.on("GetBGconfig", (Event, args) => {
+    fs.readFile(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginWindowConfig}`), (err, data) => {
+        if (err) console.log(err);
+        else {
             let result = JSON.parse(data);
             result = JSON.stringify(result.background);
-            Event.reply("BGconfigResult",result);
+            Event.reply("BGconfigResult", result);
         }
     });
 });
@@ -332,22 +354,22 @@ ipcMain.on("GetBGconfig",(Event,args)=>{
  * When user login, then check user data
  * If approved , close current window(Login) and build a new window(Main)
  */
-ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
+ipcMain.on("UserLoginFromLoginWindow", (Event, args) => {
     let users = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`)));
     let user = JSON.parse(args);
     let userLoginResult = userLogin(user);
-    let userWriteIn={
-        ID:user[0],
-        PWD:user[1]
+    let userWriteIn = {
+        ID: user[0],
+        PWD: user[1]
     }
     let w = BrowserWindow.getFocusedWindow();
-    if(userLoginResult===true){
+    if (userLoginResult === true) {
         users.push(userWriteIn);
-        fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`),JSON.stringify(users));
+        fs.writeFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.LoginUsers}`), JSON.stringify(users));
         CurrentUser = user;
         indexWindow(user[0]);
         w.close();
-    }else{
+    } else {
         /**
          * 待補充
          */
@@ -357,12 +379,12 @@ ipcMain.on("UserLoginFromLoginWindow",(Event,args)=>{
  * Application Setting Window , Manager App [Config/Mapping Rule/SideBar function]
  * 應用程式的設定視窗 管理程式的設定檔/主機資料映射規則/sideBar的功能鍵
  */
-ipcMain.on("Main_setting_window",(Event,args)=>{
-    if(args!=true){
-        Event.reply("ErrorMessage","has some problem in index.js/ipcMain [Main_setting_window]");
+ipcMain.on("Main_setting_window", (Event, args) => {
+    if (args != true) {
+        Event.reply("ErrorMessage", "has some problem in index.js/ipcMain [Main_setting_window]");
         return 0;
     }
-    let w = BrowserWindow.getFocusedWindow(); 
+    let w = BrowserWindow.getFocusedWindow();
     mainSettingWindow();
     w.close();
 });
@@ -370,9 +392,9 @@ ipcMain.on("Main_setting_window",(Event,args)=>{
  * 
  * 當使用者要從設定頁面回到主頁面
  */
-ipcMain.on("fromMainSettingToHomePage",(Event,args)=>{
-    if(args!=true){
-        Event.reply("ErrorMessage","Something Error");
+ipcMain.on("fromMainSettingToHomePage", (Event, args) => {
+    if (args != true) {
+        Event.reply("ErrorMessage", "Something Error");
         return 0;
     }
     let w = BrowserWindow.getFocusedWindow();
@@ -383,66 +405,66 @@ ipcMain.on("fromMainSettingToHomePage",(Event,args)=>{
  * MainSettingWindowRequest Process
  * 主要處理從MainSettingWindow發出的處理請求
  */
-ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
-    if(args.requestFunc=="RenderExteriorAttributes"){
-        if(args.reqData!==true){
+ipcMain.on("MainSettingWindowRequest", (Event, args) => {
+    if (args.requestFunc == "RenderExteriorAttributes") {
+        if (args.reqData !== true) {
             console.log("SomeThingError");
             return 0;
         }
-        let result=[];
+        let result = [];
         let publicWindowConfigAttri = JSON.parse(fs.readFileSync(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`)));
-        let userPreviteWindowConfigAttri = JSON.parse(fs.readFileSync(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
+        let userPreviteWindowConfigAttri = JSON.parse(fs.readFileSync(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`)));
         userPreviteWindowConfigAttri = userPreviteWindowConfigAttri.RenderExteriorAttributes;
         result.push(publicWindowConfigAttri);
-        for(let i in userPreviteWindowConfigAttri){
-                result.push(userPreviteWindowConfigAttri[i]);
+        for (let i in userPreviteWindowConfigAttri) {
+            result.push(userPreviteWindowConfigAttri[i]);
         }
         result = {
-            requestFunc:"RenderExteriorAttributes",
-            data:result
+            requestFunc: "RenderExteriorAttributes",
+            data: result
         };
-        Event.reply("MainSettingWindowDashBoardManager",result);
-    }else if(args.requestFunc=="saveExteriorAttributes"){
-        if(args.reqData.oldWindowID=="PublicConfig"){
+        Event.reply("MainSettingWindowDashBoardManager", result);
+    } else if (args.requestFunc == "saveExteriorAttributes") {
+        if (args.reqData.oldWindowID == "PublicConfig") {
             let writeIn = {
-                width:args.reqData.width,
-                height:args.reqData.height
+                width: args.reqData.width,
+                height: args.reqData.height
             }
-            fs.writeFile(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`),JSON.stringify(writeIn),(err)=>{
+            fs.writeFile(path.join(`${__dirname}/${ConfigPath.SysConfig.PublicWindowConfig}`), JSON.stringify(writeIn), (err) => {
                 let result = {
-                    requestFunc:"saveExteriorAttributes",
-                    data:false
+                    requestFunc: "saveExteriorAttributes",
+                    data: false
                 };
-                if(err){
+                if (err) {
                     console.log(err);
-                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    Event.reply("MainSettingWindowDashBoardManager", result);
                     return 0;
                 }
                 result.data = {
-                    UID:args.reqData.ID,
-                    ID:args.reqData.newWindowID,
-                    width:args.reqData.width,
-                    height:args.reqData.height
+                    UID: args.reqData.ID,
+                    ID: args.reqData.newWindowID,
+                    width: args.reqData.width,
+                    height: args.reqData.height
                 };
-                Event.reply("MainSettingWindowDashBoardManager",result);
+                Event.reply("MainSettingWindowDashBoardManager", result);
             });
-        }else{
-            fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
-                if(err){
+        } else {
+            fs.readFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), (err, data) => {
+                if (err) {
                     console.log(err);
-                    let result={
-                        requestFunc:"saveExteriorAttributes",
-                        data:false
+                    let result = {
+                        requestFunc: "saveExteriorAttributes",
+                        data: false
                     };
-                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    Event.reply("MainSettingWindowDashBoardManager", result);
                     return 0;
                 }
                 let OverWriteFile = JSON.parse(data);
                 let target = OverWriteFile.RenderExteriorAttributes;
-                let OverWriteContent=[];
-                for(let i in target){
+                let OverWriteContent = [];
+                for (let i in target) {
                     let r = target[i];
-                    if(`${target[i].ID}`== `${args.reqData.oldWindowID}`){
+                    if (`${target[i].ID}` == `${args.reqData.oldWindowID}`) {
                         r.ID = args.reqData.newWindowID;
                         r.width = args.reqData.width;
                         r.height = args.reqData.height;
@@ -450,118 +472,118 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
                     OverWriteContent.push(r);
                 }
                 OverWriteFile.RenderExteriorAttributes = OverWriteContent;
-                fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(OverWriteFile),(err)=>{
+                fs.writeFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), JSON.stringify(OverWriteFile), (err) => {
                     let result = {
-                        requestFunc:"saveExteriorAttributes",
-                        data:false
+                        requestFunc: "saveExteriorAttributes",
+                        data: false
                     };
-                    if(err){
+                    if (err) {
                         console.log(err);
-                        Event.reply("MainSettingWindowDashBoardManager",result);
+                        Event.reply("MainSettingWindowDashBoardManager", result);
                         return 0;
                     }
-                    
+
                     result.data = {
-                        UID:args.reqData.ID,
-                        ID:args.reqData.newWindowID,
-                        width:args.reqData.width,
-                        height:args.reqData.height
+                        UID: args.reqData.ID,
+                        ID: args.reqData.newWindowID,
+                        width: args.reqData.width,
+                        height: args.reqData.height
                     };
-                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    Event.reply("MainSettingWindowDashBoardManager", result);
                 });
             });
         }
-    }else if(args.requestFunc=="deleteExteriorAttributes"){
-        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
-            if(err){
+    } else if (args.requestFunc == "deleteExteriorAttributes") {
+        fs.readFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), (err, data) => {
+            if (err) {
                 console.log(err);
                 return 0;
             }
             dataSet = JSON.parse(data);
             data = dataSet.RenderExteriorAttributes;
             let update = [];
-            for(let i in data){
-                    if(`${data[i].ID}`==`${args.ID}`)continue;
-                    update.push(data[i]);
-                
+            for (let i in data) {
+                if (`${data[i].ID}` == `${args.ID}`) continue;
+                update.push(data[i]);
+
             }
             dataSet.RenderExteriorAttributes = update;
-            fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(dataSet),(err)=>{
-                if(err){
+            fs.writeFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), JSON.stringify(dataSet), (err) => {
+                if (err) {
                     console.log(err);
                     return 0;
                 }
-                let result={
-                    requestFunc:"deleteExteriorAttributes",
-                    data:true
+                let result = {
+                    requestFunc: "deleteExteriorAttributes",
+                    data: true
                 }
-                Event.reply("MainSettingWindowDashBoardManager",result);
+                Event.reply("MainSettingWindowDashBoardManager", result);
             });
         });
-    }else if(args.requestFunc=="addNewRenderExteriorAttributes"){
-        fs.readFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),(err,data)=>{
-            if(err){
+    } else if (args.requestFunc == "addNewRenderExteriorAttributes") {
+        fs.readFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), (err, data) => {
+            if (err) {
                 console.log(err);
                 return 0;
             }
             dataSet = JSON.parse(data);
             let addItem = {
-                ID:`${args.ID}`,
-                width:`${args.width}`,
-                height:`${args.height}`
+                ID: `${args.ID}`,
+                width: `${args.width}`,
+                height: `${args.height}`
             }
             dataSet.RenderExteriorAttributes.push(addItem);
-            fs.writeFile(path.join(`${__dirname}`,`${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`),JSON.stringify(dataSet),(err)=>{
-                if(err){
+            fs.writeFile(path.join(`${__dirname}`, `${ConfigPath.UserConfig.UserWindowPersonalizeConfig}`), JSON.stringify(dataSet), (err) => {
+                if (err) {
                     console.log(err);
-                    let result={
-                        requestFunc:"ErrorMessage",
-                        Context:`${err}`
+                    let result = {
+                        requestFunc: "ErrorMessage",
+                        Context: `${err}`
                     }
-                    Event.reply("MainSettingWindowDashBoardManager",result);
+                    Event.reply("MainSettingWindowDashBoardManager", result);
                     return 0;
                 }
-                let result={
-                    requestFunc:"addNewRenderExteriorAttributes",
-                    result:true
+                let result = {
+                    requestFunc: "addNewRenderExteriorAttributes",
+                    result: true
                 }
-                Event.reply("MainSettingWindowDashBoardManager",result);
+                Event.reply("MainSettingWindowDashBoardManager", result);
             });
         });
     }
 });
-ipcMain.on("QueryStringCommunication",(Event,args)=>{
-    if(args==null||args.QueryString==undefined||args==undefined){
+ipcMain.on("QueryStringCommunication", (Event, args) => {
+    if (args == null || args.QueryString == undefined || args == undefined) {
         console.log("error");
         return 0;
     }
     //QueryStringCommunication
-    fs.readFile(path.join(`${__dirname}`,`${ConfigPath.SysConfig.VirtualWorkList}`),(err,data)=>{
-        if(err){
+    fs.readFile(path.join(`${__dirname}`, `${ConfigPath.SysConfig.VirtualWorkList}`), (err, data) => {
+        if (err) {
             console.log(err);
             return 0;
         }
         data = JSON.parse(data);
-        if(args.QueryType==0||args.QueryType==1){
-            for(let i in data){
-                if(`${data[i].StudyNumber}`==`${args.QueryString}`){
-                    Event.reply("QueryStringCommunication",[data[i]]);
+        if (args.QueryType == 0 || args.QueryType == 1) {
+            for (let i in data) {
+                if (`${data[i].StudyNumber}` == `${args.QueryString}`) {
+                    Event.reply("QueryStringCommunication", [data[i]]);
                     return 0;
                 }
             }
-        }else if(args.QueryType==2){
-            for(let i in data){
-                for(let j in data[i].Studys){
-                    if(`${data[i].Studys[j].AccessionNumber}`==`${args.QueryString}`){
+        } else if (args.QueryType == 2) {
+            for (let i in data) {
+                for (let j in data[i].Studys) {
+                    if (`${data[i].Studys[j].AccessionNumber}` == `${args.QueryString}`) {
                         let result = data[i];
                         result.Studys = [data[i].Studys[j]];
-                        Event.reply("QueryStringCommunication",[result]);
+                        Event.reply("QueryStringCommunication", [result]);
                         return 0;
                     }
                 }
-            }            
+            }
         }
-        Event.reply("QueryStringCommunication",false);
+        Event.reply("QueryStringCommunication", false);
     });
 });
 /**
@@ -570,7 +592,7 @@ ipcMain.on("QueryStringCommunication",(Event,args)=>{
 /**
  * Leave Application
  */
-ipcMain.on("LeaveApplication",(Event,args)=>{
+ipcMain.on("LeaveApplication", (Event, args) => {
     app.quit();
 });
 
@@ -580,7 +602,7 @@ ipcMain.on("LeaveApplication",(Event,args)=>{
  * Description:
  *  When close all window, stop application process
  */
-app.on('window-all-closed',()=>{
+app.on('window-all-closed', () => {
     app.quit();
 });
 
