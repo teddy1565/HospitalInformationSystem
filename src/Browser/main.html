@@ -151,30 +151,7 @@
                                 <table class="table text-nowrap table-striped text-center">
                                     <thead class="thead-dark">
                                         <tr id="StudyListProperty">
-                                            <th scope="col">#</th>
-                                            <th class="bs-checkbox" rowspan="2" data-field="state">
-                                                <label>
-                                                    <input type="checkbox" id="SelectAllStudyCheckBox" onclick="SelectAllStudy('SelectAllStudyCheckBox')" name="btSelectAll">
-                                                </label>
-                                            </th>
-                                            <th scope="col">性名</th>
-                                            <th scope="col">病例號</th>
-                                            <th scope="col">身分證字號</th>
-                                            <th scope="col">檢查</th>
-                                            <th scope="col">時間</th>
-                                            <th scope="col">檢查狀態</th>
-                                            <th scope="col">費用狀態</th>
-                                            <th scope="col">年齡</th>
-                                            <th scope="col">身高</th>
-                                            <th scope="col">體重</th>
-                                            <th scope="col">A</th>
-                                            <th scope="col">B</th>
-                                            <th scope="col">C</th>
-                                            <th scope="col">D</th>
-                                            <th scope="col">E</th>
-                                            <th scope="col">F</th>
-                                            <th scope="col">G</th>
-                                            <th scope="col">H</th>
+                                            <!--表格的table由MainWindowWorkListItems帶入-->
                                         </tr>
                                     </thead>
                                     <tbody id="StudyList" data-link="row">
@@ -224,6 +201,11 @@
         args = JSON.parse(args);
         CurrentUser = args.ID;
         document.getElementById("UserDashBoard").innerHTML += `<span class="navbar-text">${args.ID}</span>`;
+    });
+    window.ipcRenderer.receive("MainWindowWorkListItems",(args)=>{
+        for(let i in args){
+            document.getElementById("StudyListProperty").innerHTML+=`${args[i]}`;
+        }
     });
     function signOut() {
         window.ipcRenderer.send("userSingOutFromMainWindow", CurrentUser);

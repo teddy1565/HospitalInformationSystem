@@ -1,0 +1,13 @@
+[
+    "<th scope=\"col\">#</th>",
+    "<th class=\"bs-checkbox\" rowspan=\"2\" data-field=\"state\"><label><input type=\"checkbox\" id=\"SelectAllStudyCheckBox\" onclick=\"SelectAllStudy('SelectAllStudyCheckBox')\" name=\"btSelectAll\"></label></th>",
+    "<th scope=\"col\">性名</th>",
+    "<th scope=\"col\">病歷號</th>",
+    "<th scope=\"col\">身分證字號</th>",
+    "<th scope=\"col\">檢查時間</th>",
+    "<th scope=\"col\">費用狀態</th>",
+    "<th scope=\"col\">日期</th>",
+    "<th scope=\"col\">年齡</th>",
+    "<th scope=\"col\">身高</th>",
+    "<th scope=\"col\">體重</th>"
+]

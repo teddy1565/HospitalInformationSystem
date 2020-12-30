@@ -113,7 +113,14 @@ function indexWindow(CurrentUser){
             }
             mainWindow.webContents.send("mainWindowSideBarMenuElementSetup",result);
         });
-        
+        fs.readFile(path.join(__dirname,`${ConfigPath.UserConfig.mainWorkListTopic}`),(err,data)=>{
+            if(err){
+                console.log(err);
+                return 0;
+            }
+            data = JSON.parse(data);
+            mainWindow.webContents.send("MainWindowWorkListItems",data);
+        });
         mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
     });
 }

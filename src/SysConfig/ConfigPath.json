@@ -1,7 +1,8 @@
 {
     "UserConfig":
     {
-        "UserWindowPersonalizeConfig":"./src/UserConfig/UserWindowPersonalizeConfig.json"
+        "UserWindowPersonalizeConfig":"./src/UserConfig/UserWindowPersonalizeConfig.json",
+        "mainWorkListTopic":"./src/UserConfig/mainWorkListTopic.json"
     },
     "SysConfig":
     {
