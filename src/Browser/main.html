@@ -41,7 +41,28 @@
             </button>
             <input class="form-control form-control-dark w-100" id="QueryString" type="text" placeholder="Search"
                 aria-label="Seach">
-            <button class="btn btn-success" onclick="Query()">Query</button>
+            <div class="btn-group ">
+            <button class="btn btn-success" id="QueryButton" onclick="Query(0)">Query</button>
+            <button type="button" class="btn btn-lg btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                  <a class="dropdown-item" href="#" onclick="changeQueryString(1)">依照病歷號搜尋</a>
+                  <a class="dropdown-item" href="#" onclick="changeQueryString(2)">依照單號搜尋</a>
+                  <script>
+                      function changeQueryString(v){
+                        if(v==1){
+                            document.getElementById("QueryString").placeholder="請輸入病歷號";
+                            document.getElementById("QueryButton").onclick = function onclick(){ Query(1); }
+                        }
+                        else if(v==2){
+                            document.getElementById("QueryString").placeholder="請輸入單號";
+                            document.getElementById("QueryButton").onclick = function onclick(){ Query(2); }
+                        }
+                      }
+                  </script>
+              </div>
+            </div>
             <div style="margin-left: 5%;"></div>
             <div class="dropdown show">
                 <a class="btn btn-default dropdown-toggle" href="#" role="button" id="UserDashBoard" data-toggle="dropdown"
@@ -148,6 +169,7 @@
                         <!--工作列表屬性-->
                         <div class="row">
                             <div class="container-fluid">
+                                <div id="Message"></div>
                                 <table class="table text-nowrap table-striped text-center">
                                     <thead class="thead-dark">
                                         <tr id="StudyListProperty">
@@ -155,21 +177,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="StudyList" data-link="row">
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td class="bs-checkbox">
-                                                <label>
-                                                    <input data-index="0" id="StudyListCheckBox" name="btSelectItem" type="checkbox" value="0">
-                                                </label>
-                                            </td>
-                                            <td>AAAAA</td>
-                                            <td>AAAAA</td>
-                                            <td>AAAAAAAAAAAAAAAAAAAAAAAAAA</td>
-                                            <td>AAAAA</td>
-                                            <td>AAAAA</td>
-                                            <td>AAAAA</td>
-                                            <td>AAAAA</td>
-                                        </tr>
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -210,18 +218,70 @@
     function signOut() {
         window.ipcRenderer.send("userSingOutFromMainWindow", CurrentUser);
     }
-    function Query() {
-        let QueryString = document.getElementById("QueryString").value;
-
+    function Query(QueryType) {
+        document.getElementById("Message").innerHTML="";
+        let QueryRequest = {
+            QueryString:`${document.getElementById("QueryString").value}`,
+            QueryType:QueryType
+        }
         document.getElementById("QueryString").value = null;
-        window.ipcRenderer.send("QueryStringCommunicationTest", QueryString);
+        document.getElementById("QueryButton").onclick = function onclick(){ Query(0); };
+        window.ipcRenderer.send("QueryStringCommunication", QueryRequest);
     }
+    window.ipcRenderer.receive("QueryStringCommunication",(args)=>{
+        if(args==false){
+            document.getElementById("Message").innerHTML=`
+                <div class="row bg-danger justify-content-center">
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                        <strong>查無此資料!</strong> 請重新確認輸入的資料。
+                    </div>
+                    <script>
+                        function TempMessage(){
+                            document.getElementById("Message").innerHTML="";
+                        }
+                    <\/script>
+                </div>
+            `;
+        }
+        document.getElementById("StudyList").innerHTML="";
+        let counter=1;
+        for(let j in args){
+            for(let i in args[j].Studys){
+                document.getElementById("StudyList").innerHTML+=`
+                    <tr>
+                        <th scope="row">${counter}</th>
+                        <td class="bs-checkbox">
+                            <label>
+                                <input data-index="${counter-1}" id="StudyListCheckBox" name="btSelectItem" type="checkbox" value="0">
+                            </label>
+                        </td>
+                        <td>${args[j].Name==undefined?"":args[j].Name}</td>
+                        <td>${args[j].StudyNumber==undefined?"":args[j].StudyNumber}</td>
+                        <td>${args[j].Studys[i].AccessionNumber==undefined?"":args[j].Studys[i].AccessionNumber}</td>
+                        <td>${args[j].IDCardNumber==undefined?"":args[j].IDCardNumber}</td>
+                        <td>${args[j].Studys[i].StudyTime==undefined?"":args[j].Studys[i].StudyTime}</td>
+                        <td>${args[j].Studys[i].PaymentStatus.Amount==undefined?"":args[j].Studys[i].PaymentStatus.Amount}</td>
+                        <td>${args[j].Age==undefined?"":args[j].Age}</td>
+                        <td>${args[j].Height==undefined?"":args[j].Height}</td>
+                        <td>${args[j].Width==undefined?"":args[j].Width}</td>
+                    </tr>
+                `;
+                counter++;
+            }
+        }
+    });
     function SelectAllStudy(id){
         let e = document.getElementById(id).checked;
+        let checkboxList = document.getElementsByName("btSelectItem");
         if(e==true){
-            document.getElementById("StudyListCheckBox").checked=true;
+            for(let i in checkboxList){
+                checkboxList[i].checked=true;
+            }
         }else{
-            document.getElementById("StudyListCheckBox").checked=false;
+            for(let i in checkboxList){
+                checkboxList[i].checked=false;
+            }
         }
     }
     function Setting(){

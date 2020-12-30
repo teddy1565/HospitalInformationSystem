@@ -11,6 +11,7 @@
         "LoginWindowConfig":"./src/SysConfig/LoginWindowConfig.json",
         "WindowRenderPath":"./src/SysConfig/WindowRenderPath.json",
         "main_setting_menu_button":"./src/SysConfig/main_setting_menu_button.json",
+        "VirtualWorkList":"./src/SysConfig/VirtualWorkList.json",
         "mainWindowSideBarMenuElement":"./src/SysConfig/mainWindowSideBarMenuElement.json"
     }
 }

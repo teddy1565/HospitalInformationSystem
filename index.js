@@ -123,6 +123,7 @@ function indexWindow(CurrentUser){
         });
         mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
     });
+    mainWindow.webContents.openDevTools();
 }
 /**
  * Login Window
@@ -530,7 +531,40 @@ ipcMain.on("MainSettingWindowRequest",(Event,args)=>{
         });
     }
 });
-
+ipcMain.on("QueryStringCommunication",(Event,args)=>{
+    if(args==null||args.QueryString==undefined||args==undefined){
+        console.log("error");
+        return 0;
+    }
+    //QueryStringCommunication
+    fs.readFile(path.join(`${__dirname}`,`${ConfigPath.SysConfig.VirtualWorkList}`),(err,data)=>{
+        if(err){
+            console.log(err);
+            return 0;
+        }
+        data = JSON.parse(data);
+        if(args.QueryType==0||args.QueryType==1){
+            for(let i in data){
+                if(`${data[i].StudyNumber}`==`${args.QueryString}`){
+                    Event.reply("QueryStringCommunication",[data[i]]);
+                    return 0;
+                }
+            }
+        }else if(args.QueryType==2){
+            for(let i in data){
+                for(let j in data[i].Studys){
+                    if(`${data[i].Studys[j].AccessionNumber}`==`${args.QueryString}`){
+                        let result = data[i];
+                        result.Studys = [data[i].Studys[j]];
+                        Event.reply("QueryStringCommunication",[result]);
+                        return 0;
+                    }
+                }
+            }            
+        }
+        Event.reply("QueryStringCommunication",false);
+    });
+});
 /**
  * Global IPC
  */

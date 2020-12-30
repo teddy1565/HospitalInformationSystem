@@ -1,0 +1,29 @@
+[
+    {
+        "StudyNumber":"12345678",
+        "Name":"TeddyXiong",
+        "IDCardNumber":"A123456789",
+        "Age":"80",
+        "BirthDay":"1950/09/25",
+        "Height":"180",
+        "Width":"70",
+        "Studys":[
+            {
+                "AccessionNumber":"1091230X987654",
+                "StudyTime":"2020/12/20",
+                "PaymentStatus":{
+                    "Status":true,
+                    "Amount":0
+                }
+            },
+            {
+                "AccessionNumber":"1021130R978642",
+                "StudyTime":"2020/11/13",
+                "PaymentStatus":{
+                    "Status":false,
+                    "Amount":-200
+                }
+            }
+        ]
+    }
+]
