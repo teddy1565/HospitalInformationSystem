@@ -123,7 +123,6 @@ function indexWindow(CurrentUser){
         });
         mainWindow.webContents.send("CurrentUser",JSON.stringify(CurrentUserResult));
     });
-    mainWindow.webContents.openDevTools();
 }
 /**
  * Login Window
