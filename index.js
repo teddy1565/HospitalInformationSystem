@@ -205,7 +205,9 @@ function PDFConverterKit_Window() {
     });
     PDFConverterKitWindow.loadFile(path.join(`${__dirname}/src/Browser/PDFConverterKit.html`));
 }
-
+/**
+ * Setting視窗
+ */
 function mainSettingWindow() {
     let windowConfig = RenderExteriorAttributes("MainSettingWindow");
     let n = new BrowserWindow({
@@ -302,13 +304,33 @@ function RenderExteriorAttributes(windowID) {
     return result;
 }
 /**
- * =========================================================
+ * ============ NetWork about=======================
  */
 /**
- * NetWork functions
- * Example: upload/download/GET/POST.....blablabla
+ * 
+ * @param {String} args --要查詢的單號
  */
-
+function queryTargetStudy(args){
+    let result = {
+        StudyNumber:"12345678",
+        Name:"TeddyXiong",
+        IDCardNumber:"A123456789",
+        Age:"80",
+        BirthDay:"1950/09/25",
+        Height:"180",
+        Width:"70"
+    };
+    if(args=="1091230X987654"){
+        result.AccessionNumber = "1091230X987654";
+        result.StudyTime = "2020/12/20";
+    }else if(args == "1021130R978642"){
+        result.AccessionNumber = "1021130R978642";
+        result.StudyTime = "2020/11/13";
+    }else{
+        result = false;
+    }
+    return result;
+}
 
 /**
  * =========================================================
@@ -552,6 +574,10 @@ ipcMain.on("MainSettingWindowRequest", (Event, args) => {
         });
     }
 });
+
+/**
+ * Main頁面的查詢框回應
+ */
 ipcMain.on("QueryStringCommunication", (Event, args) => {
     if (args == null || args.QueryString == undefined || args == undefined) {
         console.log("error");
@@ -585,6 +611,13 @@ ipcMain.on("QueryStringCommunication", (Event, args) => {
         }
         Event.reply("QueryStringCommunication", false);
     });
+});
+/**
+ * main頁面，當使用者選取其中一筆病例時，回覆詳細的訊息
+ */
+ipcMain.on("getTargetStudy",(Event,args)=>{
+    let result = queryTargetStudy(args);
+    Event.reply("getTargetStudy",result);
 });
 /**
  * Global IPC

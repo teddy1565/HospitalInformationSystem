@@ -253,7 +253,7 @@
                         <th scope="row">${counter}</th>
                         <td class="bs-checkbox">
                             <label>
-                                <input data-index="${counter-1}" id="StudyListCheckBox" name="btSelectItem" type="checkbox" value="0">
+                                <input data-index="${counter-1}" id="StudyListCheckBox" name="btSelectItem" type="checkbox" value="0" onclick="showStudyInfo('${args[j].Studys[i].AccessionNumber==undefined?"":args[j].Studys[i].AccessionNumber}')">
                             </label>
                         </td>
                         <td>${args[j].Name==undefined?"":args[j].Name}</td>
@@ -284,6 +284,43 @@
             }
         }
     }
+    function showStudyInfo(args){
+        window.ipcRenderer.send("getTargetStudy",args);
+    }
+    window.ipcRenderer.receive("getTargetStudy",(args)=>{
+        if(args===false){
+            document.getElementById("Message").innerHTML=`
+                <div class="row bg-danger justify-content-center">
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                        <strong>此資料有誤!</strong> 請重新確認資料。
+                    </div>
+                    <script>
+                        function TempMessage(){
+                            document.getElementById("Message").innerHTML="";
+                        }
+                    <\/script>
+                </div>
+            `;
+            return 0;
+        }
+        let PatientInfo = document.getElementById("PatientInfo");
+        let StudyInfo = document.getElementById("StudyInfo");
+        PatientInfo.innerHTML = `
+        <div class="container justify-content-center">
+            <div class="row">病患姓名:${args.Name==undefined?"":args.Name}</div>
+            <div class="row">身高:${args.Height==undefined?"":args.Height}</div>
+            <div class="row">體重:${args.Width==undefined?"":args.Width}</div>
+            <div class="row">年齡:${args.Age==undefined?"":args.Age}</div>
+        </div>
+        `;
+        StudyInfo.innerHTML = `
+        <div class="container justify-content-center">
+            <div class="row">檢查單號:${args.AccessionNumber==undefined?"":args.AccessionNumber}</div>
+            <div class="row">檢查時間:${args.StudyTime==undefined?"":args.StudyTime}</div>
+        </div>
+        `;
+    });
     function Setting(){
         window.ipcRenderer.send("Main_setting_window",true);
     }
