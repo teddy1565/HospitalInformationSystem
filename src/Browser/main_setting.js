@@ -305,27 +305,28 @@ function RenderIPCWhiteList(){
 function IPCWLSelect(fileName){
     window.ipcRenderer.send("IPCWhiteListSetting_getProperty",`${fileName}`);
 }
-function modifyChannelAttributes(Channel_ID){
+// Receive List
+function modifyReceiveChannelAttributes(Channel_ID){
     document.getElementById(`ReceiveIDLabel_${Channel_ID}`).innerHTML = `
         <input type="text" id="ReceiveIDLabelText" value="${Channel_ID}">
         <input type="hidden" id="OLDReceiveIDLabelText" value="${Channel_ID}">
     `;
     document.getElementById(`operator_${Channel_ID}`).innerHTML=`
         <label>
-            <button type="button" class="btn btn-warning" onclick="IPCWhiteListModifySave('${Channel_ID}')">儲存</button>
+            <button type="button" class="btn btn-warning" onclick="receiveIPCWhiteListModifySave('${Channel_ID}')">儲存</button>
         </label>
     `;
 }
-function IPCWhiteListModifySave(Channel_ID){
+function receiveIPCWhiteListModifySave(Channel_ID){
     let context = document.getElementById("ReceiveIDLabelText").value;
     let oldContext = document.getElementById("OLDReceiveIDLabelText").value;
     document.getElementById("ReceiveIDLabelText").disabled = true;
     document.getElementById(`operator_${Channel_ID}`).innerHTML=`
         <label>
-            <button type="button" class="btn btn-success" onclick="modifyChannelAttributes('${Channel_ID}')">修改</button>
+            <button type="button" class="btn btn-success" onclick="modifyReceiveChannelAttributes('${Channel_ID}')">修改</button>
         </label>
         <label>
-            <button type="button" class="btn btn-danger" onclick="deleteChannelAttributes('${Channel_ID}')">刪除</button>
+            <button type="button" class="btn btn-danger" onclick="deleteReceiveChannelAttributes('${Channel_ID}')">刪除</button>
         </label>
     `;
     let ID = document.getElementById("IPCWLID").value;
@@ -333,12 +334,7 @@ function IPCWhiteListModifySave(Channel_ID){
     
 }
 function addNewReceiveChannel(){
-    `<th id="AddNewReceiveChannel_save" scope="row"></th>
-                <td class="btn" id="addNewReceiveChannel">
-                    <label>
-                        <button type="button" class="btn btn-warning" onclick="addNewReceiveChannel()">新增接收頻道</button>
-                    </label>
-                </td>`
+    
     document.getElementById("addNewReceiveChannel").innerHTML  = `<label><input id="newChannelID" type="text" class="text" placeholder="channel ID"></label>`;
     document.getElementById("AddNewReceiveChannel_save").innerHTML = `
         <button class="btn btn-warning" type="button" onclick="addNewReceiveChannelSave()">儲存</button>
@@ -351,13 +347,59 @@ function addNewReceiveChannelSave(){
     document.getElementById("AddNewReceiveChannel_save").innerHTML = "";
     window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"Add",IO:"R",ID:target,channelID:channelID});
 }
-function deleteChannelAttributes(channelID){
+function deleteReceiveChannelAttributes(channelID){
     let targetID = document.getElementById("IPCWLID").value;
     window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"Del",IO:"R",ID:targetID,channelID:channelID});
 }
+//TOPIC
 function changeIPCWLTopic(topic){
     IPCWLSelect(topic);
 }
+//Send List
+function modifySendChannelAttributes(Channel_ID){
+    document.getElementById(`SendIDLabel_${Channel_ID}`).innerHTML = `
+        <input type="text" id="SendIDLabelText" value="${Channel_ID}">
+        <input type="hidden" id="OLDSendIDLabelText" value="${Channel_ID}">
+    `;
+    document.getElementById(`operator_${Channel_ID}`).innerHTML=`
+        <label>
+            <button type="button" class="btn btn-warning" onclick="sendIPCWhiteListModifySave('${Channel_ID}')">儲存</button>
+        </label>
+    `;
+}
+function deleteSendChannelAttributes(channelID){
+    let targetID = document.getElementById("IPCWLID").value;
+    window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"Del",IO:"S",ID:targetID,channelID:channelID});
+}
+function addNewSendChannel(){
+    document.getElementById("addNewSendChannel").innerHTML  = `<label><input id="newSendChannelID" type="text" class="text" placeholder="channel ID"></label>`;
+    document.getElementById("AddNewSendChannel_save").innerHTML = `
+        <button class="btn btn-warning" type="button" onclick="addNewSendChannelSave()">儲存</button>
+    `;
+}
+function addNewSendChannelSave(){
+    let channelID = document.getElementById("newSendChannelID").value;
+    let target = document.getElementById("IPCWLID").value;
+    document.getElementById("newSendChannelID").disabled = true;
+    document.getElementById("AddNewSendChannel_save").innerHTML = "";
+    window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"Add",IO:"S",ID:target,channelID:channelID});
+}
+function sendIPCWhiteListModifySave(Channel_ID){
+    let context = document.getElementById("SendIDLabelText").value;
+    let oldContext = document.getElementById("OLDSendIDLabelText").value;
+    document.getElementById("SendIDLabelText").disabled = true;
+    document.getElementById(`operator_${Channel_ID}`).innerHTML=`
+        <label>
+            <button type="button" class="btn btn-success" onclick="modifySendChannelAttributes('${Channel_ID}')">修改</button>
+        </label>
+        <label>
+            <button type="button" class="btn btn-danger" onclick="deleteSendChannelAttributes('${Channel_ID}')">刪除</button>
+        </label>
+    `;
+    let ID = document.getElementById("IPCWLID").value;
+    window.ipcRenderer.send("IPCWhiteListOperation",{oldContext:oldContext,ID:ID,context:context,operatorType:"Modify",IO:"S"});
+}
+
 /**
  * display Targetfile IPC channels
  */
@@ -376,6 +418,9 @@ window.ipcRenderer.receive("IPCWhiteListSetting_getProperty",(args)=>{
         `;
         return 0;
     }
+    /**
+     * receive IPC list
+     */
     let ReceiveListTemplate = `
         <table class="table text-nowrap table-striped text-center">
             <thead class="thead-dark">
@@ -391,10 +436,10 @@ window.ipcRenderer.receive("IPCWhiteListSetting_getProperty",(args)=>{
             <tr>
                 <td class="btn" id="operator_${args.data.receive[i]}">
                     <label>
-                        <button type="button" class="btn btn-success" onclick="modifyChannelAttributes('${args.data.receive[i]}')">修改</button>
+                        <button type="button" class="btn btn-success" onclick="modifyReceiveChannelAttributes('${args.data.receive[i]}')">修改</button>
                     </label>
                     <label>
-                        <button type="button" class="btn btn-danger" onclick="deleteChannelAttributes('${args.data.receive[i]}')">刪除</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteReceiveChannelAttributes('${args.data.receive[i]}')">刪除</button>
                     </label>
                 </td>
                 <td id="ReceiveIDLabel_${args.data.receive[i]}">${args.data.receive[i]}</td>
@@ -414,6 +459,49 @@ window.ipcRenderer.receive("IPCWhiteListSetting_getProperty",(args)=>{
         </table>
     `;
     window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"IPCWLTopic"});
+    /**
+     * send IPC list
+     */
+    let SendListTemplate = `
+        <table class="table text-nowrap table-striped text-center">
+            <thead class="thead-dark">
+                <tr id="topic">
+                    <th scope="col">操作</col>
+                    <th scope="col">Channel ID</col>
+                </tr>
+            </thead>
+            <tbody id="SendList" data-link="row">
+            `;
+    for(let i in args.data.send){
+        SendListTemplate+=`
+            <tr>
+                <td class="btn" id="operator_${args.data.send[i]}">
+                    <label>
+                        <button type="button" class="btn btn-success" onclick="modifySendChannelAttributes('${args.data.send[i]}')">修改</button>
+                    </label>
+                    <label>
+                        <button type="button" class="btn btn-danger" onclick="deleteSendChannelAttributes('${args.data.send[i]}')">刪除</button>
+                    </label>
+                </td>
+                <td id="SendIDLabel_${args.data.send[i]}">${args.data.send[i]}</td>
+            </tr>
+        `;
+    }
+    SendListTemplate+=`
+            <tr>
+                <th id="AddNewSendChannel_save" scope="row"></th>
+                <td class="btn" id="addNewSendChannel">
+                    <label>
+                        <button type="button" class="btn btn-warning" onclick="addNewSendChannel()">新增發送頻道</button>
+                    </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    `;
+    /**
+     * baseTemplate
+     */
     let baseTemplate = `
         <div class="row justify-content-center">
             <div class="dropdown">
@@ -437,12 +525,16 @@ window.ipcRenderer.receive("IPCWhiteListSetting_getProperty",(args)=>{
                 <div class="container-fluid" id="SendDisplayBoardMessage">
                     <div class="row justify-content-center"><h1>Send</h1></div>
                 </div>
-                <div class="container-fluid" id="SendDisplayBoard"></div>
+                <div class="container-fluid" id="SendDisplayBoard">
+                ${SendListTemplate}
+                </div>
             </div>
         </div>
     `;
     DashBoard.innerHTML = baseTemplate;
 });
+
+
 /**
  * IPC channels operations
  */
@@ -453,6 +545,19 @@ window.ipcRenderer.receive("IPCWhiteListOperation",(args)=>{
             <div class="alert alert-success alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
                 <strong>Receive設定成功!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+            RenderIPCWhiteList();
+        }else if(args.IO==="S"){
+            document.getElementById("Message").innerHTML=`
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>Send設定成功!</strong>
             </div>
             <script>
                 function TempMessage(){
@@ -476,27 +581,53 @@ window.ipcRenderer.receive("IPCWhiteListOperation",(args)=>{
             </script>
             `;
             RenderIPCWhiteList();
+        }else if(args.IO==="S"){
+            document.getElementById("Message").innerHTML=`
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>Send設定成功!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+            RenderIPCWhiteList();
         }
     }else if(args.operatorType==="Del"){
+        if(args.aberrant){
+            document.getElementById("Message").innerHTML=`
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>發生異常!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+            return 0;
+        }
         if(args.IO==="R"){
-            if(args.aberrant){
-                document.getElementById("Message").innerHTML=`
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
-                    <strong>發生異常!</strong>
-                </div>
-                <script>
-                    function TempMessage(){
-                        document.getElementById("Message").innerHTML="";
-                    }
-                </script>
-                `;
-                return 0;
-            }
             document.getElementById("Message").innerHTML=`
             <div class="alert alert-success alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
                 <strong>Receive設定成功!</strong>
+            </div>
+            <script>
+                function TempMessage(){
+                    document.getElementById("Message").innerHTML="";
+                }
+            </script>
+            `;
+            RenderIPCWhiteList();
+        }else if(args.IO==="S"){
+            document.getElementById("Message").innerHTML=`
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" onclick="TempMessage()">&times;</button>
+                <strong>Send設定成功!</strong>
             </div>
             <script>
                 function TempMessage(){

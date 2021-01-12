@@ -683,6 +683,26 @@ ipcMain.on("IPCWhiteListOperation",(Event,args)=>{
                 fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(backup));
                 Event.reply("IPCWhiteListOperation",{IO:"R",ID:args.ID,context:args.context,operatorType:"Modify"});
             });
+        }else if(args.IO==="S"){
+            fs.readFile(path.join(`${__dirname}/src/BrowserPreloadScript/whiteList.json`),(err,data)=>{
+                if(err){
+                    Event.reply("IPCWhiteListOperation",{data:null,state:false});
+                    return 0;
+                }
+                backup = JSON.parse(data);
+                data = backup[`${args.ID}`].send;
+                console.log(backup);
+                for(let i in data){
+                    if(data[i]==args.oldContext){
+                        data[i] = args.context;
+                        break;
+                    }
+                }
+                backup[`${args.ID}`].send = data;
+
+                fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(backup));
+                Event.reply("IPCWhiteListOperation",{IO:"S",ID:args.ID,context:args.context,operatorType:"Modify"});
+            });
         }
     }else if(args.operatorType==="Add"){
         if(args.IO==="R"){
@@ -694,6 +714,16 @@ ipcMain.on("IPCWhiteListOperation",(Event,args)=>{
                 data[`${args.ID}`].receive.push(`${args.channelID}`);
                 fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(data));
                 Event.reply("IPCWhiteListOperation",{operatorType:"Add",IO:"R"});
+            });
+        }else if(args.IO==="S"){
+            fs.readFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,(err,data)=>{
+                if(err){
+                    return 0;
+                }
+                data = JSON.parse(data);
+                data[`${args.ID}`].send.push(`${args.channelID}`);
+                fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(data));
+                Event.reply("IPCWhiteListOperation",{operatorType:"Add",IO:"S"});
             });
         }
     }else if(args.operatorType==="Del"){
@@ -717,6 +747,28 @@ ipcMain.on("IPCWhiteListOperation",(Event,args)=>{
                         return 0;
                     }
                     Event.reply("IPCWhiteListOperation",{operatorType:"Del",IO:"R"});
+                });
+            });
+        }else if(args.IO==="S"){
+            fs.readFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,(err,data)=>{
+                if(err){
+                    return 0;
+                }
+                data = JSON.parse(data);
+                let T = data[`${args.ID}`].send;
+                for(let i in T){
+                    if(T[i]==`${args.channelID}`){
+                        T.splice(i,1);
+                        break;
+                    }
+                }
+                data[`${args.ID}`].send = T;
+                fs.writeFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(data),(err)=>{
+                    if(err){
+                        Event.reply("IPCWhiteListOperation",{operatorType:"Del",IO:"S",aberrant:true});
+                        return 0;
+                    }
+                    Event.reply("IPCWhiteListOperation",{operatorType:"Del",IO:"S"});
                 });
             });
         }
