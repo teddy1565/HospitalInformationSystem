@@ -1,0 +1,52 @@
+{
+    "main_setting": {
+        "receive": [
+            "IPCWhiteListOperation",
+            "IPCWhiteListSetting_getProperty",
+            "mainSettingMenuListItems",
+            "MainSettingWindowDashBoardManager",
+            "IPCWhiteListSetting"
+        ],
+        "send": [
+            "IPCWhiteListOperation",
+            "IPCWhiteListSetting_getProperty",
+            "fromMainSettingToHomePage",
+            "MainSettingWindowRequest",
+            "IPCWhiteListSetting"
+        ]
+    },
+    "main": {
+        "receive": [
+            "getTargetStudy",
+            "QueryStringCommunication",
+            "MainWindowWorkListItems",
+            "CurrentUser",
+            "ErrorMessage",
+            "mainWindowSideBarMenuElementSetup"
+        ],
+        "send": [
+            "getTargetStudy",
+            "userSingOutFromMainWindow",
+            "QueryStringCommunication",
+            "Main_setting_window"
+        ]
+    },
+    "Login": {
+        "receive": [
+            "loadBG",
+            "BGconfigResult",
+            "localUsersList"
+        ],
+        "send": [
+            "UserLoginFromLoginWindow",
+            "GetBGconfig",
+            "LeaveApplication"
+        ]
+    },
+    "capture_test": {
+        "receive": [],
+        "send": [
+            "userSingOutFromMainWindow"
+        ]
+    }
+}

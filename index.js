@@ -619,6 +619,109 @@ ipcMain.on("getTargetStudy",(Event,args)=>{
     let result = queryTargetStudy(args);
     Event.reply("getTargetStudy",result);
 });
+
+/**
+ * IPCWhiteListSetting IPC通訊白名單設定
+ */
+ipcMain.on("IPCWhiteListSetting",(Event,args)=>{
+    if(args!==true){
+        return 0;
+    }
+    fs.readFile(path.join(`${__dirname}/src/BrowserPreloadScript/whiteList.json`),(err,data)=>{
+        if(err){
+            Event.reply("IPCWhiteListSetting",{data:null,state:false});
+            return 0;
+        }
+        data = JSON.parse(data);
+        Event.reply("IPCWhiteListSetting",{data:data,state:true});
+    });
+});
+/**
+ * IPCWhiteListSetting_getProperty
+ * 
+ * get specify render IPC White List property
+ * 
+ * 取得指定檔案的IPC白名單內容
+ */
+ipcMain.on("IPCWhiteListSetting_getProperty",(Event,args)=>{
+    if(typeof(args)!="string"){
+        return 0;
+    }
+    fs.readFile(path.join(`${__dirname}/src/BrowserPreloadScript/whiteList.json`),(err,data)=>{
+        if(err){
+            Event.reply("IPCWhiteListSetting_getProperty",{data:null,state:false});
+            return 0;
+        }
+        data = JSON.parse(data)[`${args}`];
+        Event.reply("IPCWhiteListSetting_getProperty",{ID:args,data:data,state:true});
+    });
+});
+/**
+ * IPC White List operations func
+ * IPC白名單修改刪除等操作處理之函式
+ * R - receive || S - send
+ */
+ipcMain.on("IPCWhiteListOperation",(Event,args)=>{
+    if(args.operatorType==="Modify"){
+        if(args.IO==="R"){
+            fs.readFile(path.join(`${__dirname}/src/BrowserPreloadScript/whiteList.json`),(err,data)=>{
+                if(err){
+                    Event.reply("IPCWhiteListOperation",{data:null,state:false});
+                    return 0;
+                }
+                backup = JSON.parse(data);
+                data = backup[`${args.ID}`].receive;
+                console.log(backup);
+                for(let i in data){
+                    if(data[i]==args.oldContext){
+                        data[i] = args.context;
+                        break;
+                    }
+                }
+                backup[`${args.ID}`].receive = data;
+
+                fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(backup));
+                Event.reply("IPCWhiteListOperation",{IO:"R",ID:args.ID,context:args.context,operatorType:"Modify"});
+            });
+        }
+    }else if(args.operatorType==="Add"){
+        if(args.IO==="R"){
+            fs.readFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,(err,data)=>{
+                if(err){
+                    return 0;
+                }
+                data = JSON.parse(data);
+                data[`${args.ID}`].receive.push(`${args.channelID}`);
+                fs.writeFileSync(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(data));
+                Event.reply("IPCWhiteListOperation",{operatorType:"Add",IO:"R"});
+            });
+        }
+    }else if(args.operatorType==="Del"){
+        if(args.IO==="R"){
+            fs.readFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,(err,data)=>{
+                if(err){
+                    return 0;
+                }
+                data = JSON.parse(data);
+                let T = data[`${args.ID}`].receive;
+                for(let i in T){
+                    if(T[i]==`${args.channelID}`){
+                        T.splice(i,1);
+                        break;
+                    }
+                }
+                data[`${args.ID}`].receive = T;
+                fs.writeFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,JSON.stringify(data),(err)=>{
+                    if(err){
+                        Event.reply("IPCWhiteListOperation",{operatorType:"Del",IO:"R",aberrant:true});
+                        return 0;
+                    }
+                    Event.reply("IPCWhiteListOperation",{operatorType:"Del",IO:"R"});
+                });
+            });
+        }
+    }
+});
 /**
  * Global IPC
  */
