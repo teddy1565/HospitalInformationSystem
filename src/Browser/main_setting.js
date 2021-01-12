@@ -355,6 +355,9 @@ function deleteChannelAttributes(channelID){
     let targetID = document.getElementById("IPCWLID").value;
     window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"Del",IO:"R",ID:targetID,channelID:channelID});
 }
+function changeIPCWLTopic(topic){
+    IPCWLSelect(topic);
+}
 /**
  * display Targetfile IPC channels
  */
@@ -410,9 +413,15 @@ window.ipcRenderer.receive("IPCWhiteListSetting_getProperty",(args)=>{
             </tbody>
         </table>
     `;
+    window.ipcRenderer.send("IPCWhiteListOperation",{operatorType:"IPCWLTopic"});
     let baseTemplate = `
         <div class="row justify-content-center">
-            <h1>${args.ID}</h1>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" id="whitelist" data-toggle="dropdown"><h1>${args.ID}</h1></button>
+                <div class="dropdown-menu" aria-labelledby="whitelist" id="IPCWLTopic">
+                
+                </div>
+            </div>
             <input type="hidden" id="IPCWLID" value="${args.ID}">
         </div>
         <div class="row">
@@ -496,6 +505,11 @@ window.ipcRenderer.receive("IPCWhiteListOperation",(args)=>{
             </script>
             `;
             RenderIPCWhiteList();
+        }
+    }else if(args.operatorType==="IPCWLTopic"){
+        let T = document.getElementById("IPCWLTopic");
+        for(let i in args.data){
+            T.innerHTML+=`<button class="dropdown-item" onclick="changeIPCWLTopic('${args.data[i]}')">${args.data[i]}</button>`;
         }
     }
 });

@@ -720,6 +720,18 @@ ipcMain.on("IPCWhiteListOperation",(Event,args)=>{
                 });
             });
         }
+    }else if(args.operatorType==="IPCWLTopic"){
+        fs.readFile(`${__dirname}/src/BrowserPreloadScript/whiteList.json`,(err,data)=>{
+            if(err){
+                return 0;
+            }
+            data = JSON.parse(data);
+            let result = [];
+            for(let i in data){
+                result.push(`${i}`);
+            }
+            Event.reply("IPCWhiteListOperation",{operatorType:"IPCWLTopic",data:result});
+        });
     }
 });
 /**
