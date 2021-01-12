@@ -300,6 +300,7 @@ function addNewRECSave(){
  * 基於安全性因素只有在白名單上的channel才能夠通訊
  */
 function RenderIPCWhiteList(){
+    
 }
 
 function LocalHostDataBaseRole(){

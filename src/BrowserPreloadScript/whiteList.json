@@ -1,0 +1,18 @@
+{
+    "main_setting":{
+        "receive":["mainSettingMenuListItems","MainSettingWindowDashBoardManager"],
+        "send":["fromMainSettingToHomePage","MainSettingWindowRequest"]
+    },
+    "main":{
+        "receive":["getTargetStudy","QueryStringCommunication","MainWindowWorkListItems","CurrentUser","ErrorMessage","mainWindowSideBarMenuElementSetup"],
+        "send":["getTargetStudy","userSingOutFromMainWindow","QueryStringCommunication","Main_setting_window"]
+    },
+    "Login":{
+        "receive":["loadBG","BGconfigResult","localUsersList"],
+        "send":["UserLoginFromLoginWindow","GetBGconfig","LeaveApplication"]
+    },
+    "capture_test":{
+        "receive":[],
+        "send":["userSingOutFromMainWindow"]
+    }
+}

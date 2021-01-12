@@ -5,3 +5,7 @@
 以 檔名_日期_作者.副檔名 放在同個資料夾
 
 千萬不要更改原型
+
+# 2021/01/12
+
+DICOM_V_WINDOW僅用於custom image loader部分規範參考

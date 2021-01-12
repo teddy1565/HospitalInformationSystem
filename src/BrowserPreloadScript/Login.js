@@ -1,15 +1,15 @@
 const {contextBridge,ipcRenderer} = require('electron');
-
+let whiteList = JSON.parse(require("fs").readFileSync(`${__dirname}/whiteList.json`)).Login;
 contextBridge.exposeInMainWorld(
     "ipcRenderer", {
         send: (channel, data) => {
-            let validChannels = ["UserLoginFromLoginWindow","GetBGconfig","LeaveApplication"];// whitelist channels
+            let validChannels = whiteList.send;// whitelist channels
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
             }
         },
         receive: (channel, func) => {
-            let validChannels = ["loadBG","BGconfigResult","localUsersList"];
+            let validChannels = whiteList.receive;
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 
                 ipcRenderer.on(channel, (event, ...args) => func(...args));
