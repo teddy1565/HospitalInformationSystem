@@ -3,6 +3,7 @@
 # 測試方式
  ```
     npm install
+    sudo npm install electron -g
     electron .
  ```
 無須密碼直接按登入即可
